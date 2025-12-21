@@ -35,7 +35,7 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts",
-    "app/auth/layout.tss"
+    "app/some/layout.tss"
   ],
   "exclude": [
     "node_modules"

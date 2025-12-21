@@ -5,12 +5,13 @@ import { db } from "./database/db";
 import { schema } from "./database/auth-schema";
 
 export const auth = betterAuth({
+  emailAndPassword: {
+    enabled: true,
+    autoSignIn: false,
+  },
+  plugins: [nextCookies()],
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: schema,
   }),
-  emailAndPassword: {
-    enabled: true,
-  },
-  plugins: [nextCookies()],
 });
