@@ -1,5 +1,15 @@
 import { relations } from "drizzle-orm";
-import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  index,
+  pgEnum,
+  integer,
+} from "drizzle-orm/pg-core";
+
+export const locationEnum = pgEnum("location", ["america", "india"]);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -73,6 +83,42 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
+export const restaurant = pgTable("restaurant", {
+  id: text("id").primaryKey(),
+  location: locationEnum(),
+});
+
+export const menu = pgTable("menu", {
+  id: text("id").primaryKey(),
+  restaurantId: text("restaurantId")
+    .notNull()
+    .unique()
+    .references(() => restaurant.id, { onDelete: "cascade" }),
+});
+
+export const item = pgTable("item", {
+  id: text("id").primaryKey(),
+  menuId: text("menuId")
+    .notNull()
+    .references(() => menu.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  imageUrl: text("imageUrl").notNull(),
+  cost: integer().default(0).notNull(),
+  elapsedTime: text("elapsedTime").notNull(),
+});
+
+export const restaurantRelations = relations(restaurant, ({ one }) => ({
+  menu: one(menu),
+}));
+
+export const menuRelations = relations(menu, ({ one, many }) => ({
+  restaurant: one(restaurant, {
+    fields: [menu.restaurantId],
+    references: [restaurant.id],
+  }),
+  items: many(item),
+}));
+
 export const userRelations = relations(user, ({ many }) => ({
   sessions: many(session),
   accounts: many(account),
@@ -97,7 +143,12 @@ export const schema = {
   session,
   account,
   verification,
+  restaurant,
+  item,
+  menu,
   userRelations,
-  sessionRelations,
   accountRelations,
+  restaurantRelations,
+  sessionRelations,
+  menuRelations,
 };

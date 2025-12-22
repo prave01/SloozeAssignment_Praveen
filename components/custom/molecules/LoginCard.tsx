@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { ErrorContext } from "better-auth/react";
 
 interface LoginInputs {
   email: string;
@@ -14,6 +15,7 @@ interface LoginInputs {
 export default function LoginCard() {
   const { register, handleSubmit } = useForm<LoginInputs>();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<ErrorContext | null>(null);
 
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
@@ -26,8 +28,10 @@ export default function LoginCard() {
         {
           onRequest: () => setLoading(true),
           onSuccess: () => console.log("success"),
-          onError: (ctx) =>
-            console.log("Error", ctx.error, ctx.request, ctx.response),
+          onError: (ctx) => {
+            setError(ctx);
+            console.log("Error", ctx.error, ctx.request, ctx.response);
+          },
         },
       );
     } catch (err) {
@@ -53,7 +57,7 @@ export default function LoginCard() {
       <hr className="" />
       <CardContent>
         <form
-          className="px-2 py-2 flex flex-col gap-3"
+          className="px-2 py-3 flex flex-col gap-3"
           onSubmit={handleSubmit(onSubmit)}
         >
           {" "}
@@ -67,9 +71,9 @@ export default function LoginCard() {
               id="email"
               type="email"
               className="placeholder:italic bg-zinc-200 text-sm
-                placeholder:text-sm max-w-100 focus:outline-none py-2 px-3
+                placeholder:text-xs max-w-100 focus:outline-none py-2 px-3
                 rounded-md w-full dark:bg-accent/50"
-              placeholder="eg. Nick"
+              placeholder="eg. tony@avengers.com"
               {...register("email", { required: true })}
             />
           </div>
@@ -82,13 +86,18 @@ export default function LoginCard() {
               required
               id="password"
               type="password"
-              className="placeholder:italic text-sm placeholder:text-sm
+              className="placeholder:italic text-sm placeholder:text-xs
                 max-w-100 focus:outline-none bg-zinc-200 py-2 px-3 rounded-md
                 w-full dark:bg-accent/50"
               placeholder="*****"
               {...register("password", { required: true })}
             />
           </div>
+          {error && (
+            <div className="w-full text-center text-destructive text-sm">
+              {error?.error.message}
+            </div>
+          )}
           <Button
             disabled={loading}
             type="submit"
