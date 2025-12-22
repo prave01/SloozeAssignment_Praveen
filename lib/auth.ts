@@ -9,9 +9,9 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: false,
   },
-  plugins: [nextCookies()],
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: schema,
   }),
+  plugins: [nextCookies()],
 });
