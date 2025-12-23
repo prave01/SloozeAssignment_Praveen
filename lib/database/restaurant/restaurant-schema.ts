@@ -1,0 +1,27 @@
+import { pgTable, text, integer, pgEnum } from "drizzle-orm/pg-core";
+
+export const locationEnum = pgEnum("location", ["america", "india"]);
+
+export const restaurant = pgTable("restaurant", {
+  id: text("id").primaryKey(),
+  location: locationEnum(),
+});
+
+export const menu = pgTable("menu", {
+  id: text("id").primaryKey(),
+  restaurantId: text("restaurantId")
+    .notNull()
+    .unique()
+    .references(() => restaurant.id, { onDelete: "cascade" }),
+});
+
+export const item = pgTable("item", {
+  id: text("id").primaryKey(),
+  menuId: text("menuId")
+    .notNull()
+    .references(() => menu.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  imageUrl: text("imageUrl").notNull(),
+  cost: integer().default(0).notNull(),
+  elapsedTime: text("elapsedTime").notNull(),
+});

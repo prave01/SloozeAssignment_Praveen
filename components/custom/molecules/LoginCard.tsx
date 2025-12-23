@@ -6,6 +6,7 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ErrorContext } from "better-auth/react";
+import { toast } from "sonner";
 
 interface LoginInputs {
   email: string;
@@ -27,7 +28,9 @@ export default function LoginCard() {
         },
         {
           onRequest: () => setLoading(true),
-          onSuccess: () => console.log("success"),
+          onSuccess: () => {
+            toast.success("Your are logged in successfully");
+          },
           onError: (ctx) => {
             setError(ctx);
             console.log("Error", ctx.error, ctx.request, ctx.response);
