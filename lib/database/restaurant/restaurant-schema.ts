@@ -1,4 +1,5 @@
 import { pgTable, text, integer, pgEnum } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 
 export const locationEnum = pgEnum("location", ["america", "india"]);
 
@@ -25,3 +26,15 @@ export const item = pgTable("item", {
   cost: integer().default(0).notNull(),
   elapsedTime: text("elapsedTime").notNull(),
 });
+
+export const restaurantRelations = relations(restaurant, ({ one }) => ({
+  menu: one(menu),
+}));
+
+export const menuRelations = relations(menu, ({ one, many }) => ({
+  restaurant: one(restaurant, {
+    fields: [menu.restaurantId],
+    references: [restaurant.id],
+  }),
+  items: many(item),
+}));
