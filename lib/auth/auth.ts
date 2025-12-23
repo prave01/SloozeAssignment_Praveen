@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { db } from "../database/drizzle";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import * as authSchema from "@/lib/database/auth/auth-schema";
 import * as authRelations from "@/lib/database/auth/relations";
 
@@ -16,7 +16,7 @@ export const auth = betterAuth({
       ...authSchema,
       ...authRelations,
     },
-    debugLogs: true,
   }),
+  experimental: { joins: true },
   plugins: [nextCookies()],
 });
