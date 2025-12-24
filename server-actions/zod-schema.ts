@@ -13,15 +13,15 @@ export const CreateMenuSchema = z.object({
 
 export type CreateMenu = z.infer<typeof CreateMenuSchema>;
 
-export const FeedMenuItems = z.object({
-  items: z.array(
-    z.object({
-      id: z.string(),
-      menuId: z.string(),
-      name: z.string(),
-      imageUrl: z.url(),
-      cost: z.number(),
-      elaspedTime: z.string(),
-    }),
-  ),
+const ItemBaseSchema = z.object({
+  name: z.string(),
+  cost: z.number().positive(),
+  menuId: z.string(),
+  elapsedTime: z.string(),
+  imageUrl: z.string(),
+  restaurantName: z.string(),
 });
+
+export const FeedItemsSchema = z.array(ItemBaseSchema);
+
+export type FeedItems = z.infer<typeof ItemBaseSchema>;

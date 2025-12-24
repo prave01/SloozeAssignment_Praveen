@@ -3,13 +3,24 @@
 import { ModeToggle } from "@/components/custom/molecules/ModeToggle";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth-client";
-import { createMenu, createRestaurant } from "@/server-actions/database";
+import { feedMenuItems } from "@/server-actions/serverFn";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
 export default function Home() {
   useEffect(() => {
-    createRestaurant({ name: "Sivan", location: "india" });
+    const res = feedMenuItems([
+      {
+        name: "Sambar",
+        restaurantName: "Sivan",
+        elapsedTime: "10min",
+        imageUrl:
+          "https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a",
+        menuId: "019b4f4c-7f26-70ce-8a39-b150ca206cf2",
+        cost: 100,
+      },
+    ]);
+    console.log(res);
   }, []);
 
   return (

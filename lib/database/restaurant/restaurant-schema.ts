@@ -1,5 +1,5 @@
-import { pgTable, text, integer, pgEnum } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { pgTable, text, integer, pgEnum, uuid } from "drizzle-orm/pg-core";
+import { relations, sql } from "drizzle-orm";
 
 export const locationEnum = pgEnum("location", ["america", "india"]);
 
@@ -18,7 +18,7 @@ export const menu = pgTable("menu", {
 });
 
 export const item = pgTable("item", {
-  id: text("id").primaryKey(),
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
   menuId: text("menuId")
     .notNull()
     .references(() => menu.id, { onDelete: "cascade" }),
@@ -39,3 +39,5 @@ export const menuRelations = relations(menu, ({ one, many }) => ({
   }),
   items: many(item),
 }));
+
+export type RestaurantType = typeof restaurant.$inferInsert;

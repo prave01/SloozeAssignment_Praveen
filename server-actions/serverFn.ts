@@ -1,14 +1,16 @@
 "use server";
 
-import { menu, restaurant } from "@/lib/database";
-import { db } from "@/lib/database/drizzle";
+import { item, menu, restaurant, type RestaurantType } from "@/lib/database";
 import { eq } from "drizzle-orm";
+import { db } from "@/lib/database/drizzle";
 import { v7 } from "uuid";
 import {
   CreateRestaurantSchema,
   CreateMenuSchema,
   type CreateRestaurant,
   type CreateMenu,
+  FeedItems,
+  FeedItemsSchema,
 } from "./zod-schema";
 
 // Create restaurant in any location
@@ -62,9 +64,7 @@ export const createMenu = async ({ restaurantName }: CreateMenu) => {
 
   const { restaurantName: name } = parsed.data;
 
-  const restaurantData = await db.query.restaurant.findFirst({
-    where: eq(restaurant.name, name),
-  });
+  const restaurantData = await getRestaurant(restaurantName);
 
   if (!restaurantData) {
     throw new Error("Restaurant not available");
@@ -85,5 +85,37 @@ export const createMenu = async ({ restaurantName }: CreateMenu) => {
   }
 };
 
+// Get restaurant
+export const getRestaurant = async (name: string): Promise<RestaurantType> => {
+  const result = await db.query.restaurant.findFirst({
+    where: eq(restaurant.name, name),
+  });
+
+  if (!result) {
+    throw new Error("No restaurant found");
+  }
+
+  return result;
+};
+
 // Feeding items into the menu
-export const feedMenuItems = async () => { };
+export const feedMenuItems = async (items: FeedItems[]) => {
+  const parsed = FeedItemsSchema.safeParse(items);
+
+  if (!parsed.success) {
+    throw new Error(`Invalid input:\n ${parsed.error.message}`);
+  }
+
+  const parsedItems = parsed.data;
+
+  try {
+    const [feededItems] = await db
+      .insert(item)
+      .values([...parsedItems])
+      .returning();
+
+    return feededItems;
+  } catch (err: any) {
+    throw err;
+  }
+};
