@@ -1,10 +1,22 @@
-import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  index,
+  pgEnum,
+} from "drizzle-orm/pg-core";
 
 import { relations } from "drizzle-orm";
+
+export const rolesEnum = pgEnum("role", ["Admin", "Manager", "Member"]);
+export const locationEnum = pgEnum("location", ["america", "india"]);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
+  role: rolesEnum().notNull(),
+  location: rolesEnum().notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   image: text("image"),

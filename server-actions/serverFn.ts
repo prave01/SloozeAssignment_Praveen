@@ -12,6 +12,8 @@ import {
   FeedItems,
   FeedItemsSchema,
 } from "./zod-schema";
+import { auth } from "@/lib/auth/auth";
+import { headers } from "next/headers";
 
 // Create restaurant in any location
 export const createRestaurant = async ({
@@ -47,6 +49,8 @@ export const createRestaurant = async ({
   }
 };
 
+export const verifyUserSession = async () => { };
+
 // Create menu for the restaurant
 export const createMenu = async ({ restaurantName }: CreateMenu) => {
   console.log(
@@ -64,7 +68,7 @@ export const createMenu = async ({ restaurantName }: CreateMenu) => {
 
   const { restaurantName: name } = parsed.data;
 
-  const restaurantData = await getRestaurant(restaurantName);
+  const restaurantData = await getRestaurant(name);
 
   if (!restaurantData) {
     throw new Error("Restaurant not available");
@@ -87,6 +91,14 @@ export const createMenu = async ({ restaurantName }: CreateMenu) => {
 
 // Get restaurant
 export const getRestaurant = async (name: string): Promise<RestaurantType> => {
+  const user = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!user?.session) {
+    throw new Error("You are not authenticated");
+  }
+
   const result = await db.query.restaurant.findFirst({
     where: eq(restaurant.name, name),
   });

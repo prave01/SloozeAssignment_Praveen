@@ -5,7 +5,7 @@ export const locationEnum = pgEnum("location", ["america", "india"]);
 
 export const restaurant = pgTable("restaurant", {
   id: text("id").primaryKey(),
-  name: text("name").notNull(),
+  name: text("name").notNull().unique(),
   location: locationEnum().notNull(),
 });
 
