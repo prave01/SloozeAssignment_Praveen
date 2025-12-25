@@ -6,7 +6,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="flex w-full h-auto">
         {" "}
         <NavMenu />
-        {children}
+        <div className="p-2 h-screen w-full">
+          {" "}
+          <div className="border dark:border-neutral-800 border-neutral-400 h-full">
+            {" "}
+            {children}
+          </div>
+        </div>
       </div>
     </div>
   );

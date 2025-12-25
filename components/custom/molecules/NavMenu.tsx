@@ -19,7 +19,7 @@ export default function NavMenu() {
         w-auto bg-neutral-300 dark:bg-accent/30 flex flex-col gap-y-2"
     >
       {" "}
-      <div className="flex flex-col mt-2 px-3 items-end">
+      <div className="flex flex-col mt-3 px-3 items-end">
         {" "}
         <Button
           onClick={() => setExpand(!isExpand)}
@@ -36,7 +36,7 @@ export default function NavMenu() {
         </Button>
       </div>
       <div className="flex mt-5 flex-col px-3 items-start">
-        <CustomButton isExpand={isExpand}>
+        <CustomButton href="/dashboard/add-user" isExpand={isExpand}>
           <IconUserPlus className="stroke-neutral-800 dark:stroke-neutral-200" />
         </CustomButton>
       </div>
