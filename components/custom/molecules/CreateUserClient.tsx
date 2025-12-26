@@ -65,9 +65,7 @@ export const CreateUserClient = () => {
         image: imageUrl,
       });
 
-      toast.success("User created successfully", {
-        description: `UserId - ${result.userId}`,
-      });
+      toast.success(`User "${data.name}" created successfully`);
     } catch (err: any) {
       console.error(err);
       toast.error("Signup failed", { description: String(err?.message) });
@@ -124,7 +122,7 @@ export const CreateUserClient = () => {
             <input
               id="password"
               type={showPassword ? "text" : "password"}
-              placeholder="****"
+              placeholder="*****"
               {...register("password", { required: true })}
               className="rounded-none placeholder:text-xs text-sm
                 placeholder:pl-1 placeholder:italic focus:outline-none
@@ -187,7 +185,7 @@ export const CreateUserClient = () => {
                 <p className="text-xs text-muted-foreground">
                   or click to select
                 </p>
-                <p className="text-xs text-orange-500">max size - 5mb</p>
+                <p className="text-xs text-orange-500">max_size - 5mb</p>
               </>
             ) : (
               <div className="relative">
