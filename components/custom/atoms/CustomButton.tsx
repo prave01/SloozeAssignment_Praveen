@@ -10,10 +10,12 @@ export default function CustomButton({
   children,
   isExpand,
   href,
+  label,
 }: {
   children: React.ReactNode;
   isExpand: boolean;
   href: string;
+  label: string;
 }) {
   const pathName = usePathname();
 
@@ -28,7 +30,7 @@ export default function CustomButton({
           shadow-[0px_2px_4px_var(--color-neutral-500)_inset]
           group-hover:dark:shadow-[0px_1px_4px_var(--color-orange-800)]
           group-hover:shadow-[0px_1px_4px_var(--color-orange-800)]`,
-          pathName.match(href) &&
+          pathName === href &&
           `dark:shadow-[0px_1px_4px_var(--color-orange-800)]
             shadow-[0px_1px_4px_var(--color-orange-800)]`,
         )}
@@ -42,10 +44,10 @@ export default function CustomButton({
           `text-sm max-w-40 group-hover:dark:text-zinc-200 text-zinc-500
           font-semibold whitespace-nowrap`,
           isExpand ? "flex" : "hidden",
-          pathName.match(href) && "dark:text-zinc-200 text-zinc-800",
+          pathName === href && "dark:text-zinc-200 text-zinc-800",
         )}
       >
-        Add Users
+        {label}
       </motion.span>
     </Link>
   );

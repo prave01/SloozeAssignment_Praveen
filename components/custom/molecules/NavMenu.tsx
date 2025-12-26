@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils";
 import { ClassNameValue } from "tailwind-merge";
 import { motion } from "motion/react";
 import { useState } from "react";
-import { IconUserPlus } from "@tabler/icons-react";
 import CustomButton from "../atoms/CustomButton";
 import { ModeToggle } from "./ModeToggle";
+import { Links } from "@/client/constants";
 
 export default function NavMenu() {
   const [isExpand, setExpand] = useState(false);
@@ -39,10 +39,16 @@ export default function NavMenu() {
             )}
           </Button>
         </div>
-        <div className="flex mt-5 flex-col px-3 items-start">
-          <CustomButton href="/dashboard/add-user" isExpand={isExpand}>
-            <IconUserPlus className="stroke-neutral-800 dark:stroke-neutral-200" />
-          </CustomButton>
+        <div className="flex gap-4 mt-5 flex-col px-3 items-start">
+          {Links.map((item) => (
+            <CustomButton
+              label={item.label}
+              href={item.href}
+              isExpand={isExpand}
+            >
+              <item.icon className="stroke-neutral-800 dark:stroke-neutral-200" />
+            </CustomButton>
+          ))}
         </div>
       </div>
       <div className="flex w-full items- justify-start bg- m-3">
