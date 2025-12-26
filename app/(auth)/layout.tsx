@@ -1,7 +1,7 @@
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div
-      className="min-h-screen w-full bg-background flex items-center
+      className="min-h-screen w-full dark:bg-black bg-zinc-200 flex items-center
         justify-center"
     >
       {children}

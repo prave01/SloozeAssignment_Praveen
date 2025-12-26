@@ -17,9 +17,6 @@ export default function CustomButton({
 }) {
   const pathName = usePathname();
 
-  console.log(pathName);
-  console.log("href", href);
-
   return (
     <Link href={href} className="flex group gap-4 items-center w-full">
       {" "}

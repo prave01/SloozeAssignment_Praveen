@@ -36,7 +36,6 @@ export default function LoginCard() {
           },
           onError: (ctx) => {
             setError(ctx);
-            console.log("Error", ctx.error, ctx.request, ctx.response);
           },
         },
       );
@@ -49,7 +48,10 @@ export default function LoginCard() {
   };
 
   return (
-    <Card className="p-0 bg-transparent z-10 overflow-hidden gap-0 relative">
+    <Card
+      className="p-0 rounded-none border-myborder border bg-transparent z-10
+        overflow-hidden gap-0 relative"
+    >
       <div
         className="absolute dark:flex hidden brightness-75 -z-10 inset-0"
         style={{
@@ -57,10 +59,12 @@ export default function LoginCard() {
             "radial-gradient(125% 125% at 50% 90%, rgba(0,0,0,0) 40%, #0d1a36 100%)",
         }}
       ></div>
-      <CardTitle className="lg:text-lg relative w-100 text-md p-2">
+      <CardTitle
+        className="lg:text-lg border-b border-myborder relative w-100 text-md
+          p-2"
+      >
         Login with credentials
       </CardTitle>
-      <hr className="" />
       <CardContent>
         <form
           className="px-2 py-3 flex flex-col gap-3"
@@ -76,9 +80,9 @@ export default function LoginCard() {
               required
               id="email"
               type="email"
-              className="placeholder:italic bg-zinc-200 text-sm
-                placeholder:text-xs max-w-100 focus:outline-none py-2 px-3
-                rounded-md w-full dark:bg-accent/50"
+              className="placeholder:italic text-sm placeholder:text-xs
+                max-w-100 focus:outline-none py-2 px-3 w-full dark:bg-black
+                bg-zinc-200 border-myborder border"
               placeholder="eg. tony@avengers.com"
               {...register("email", { required: true })}
             />
@@ -93,8 +97,8 @@ export default function LoginCard() {
               id="password"
               type="password"
               className="placeholder:italic text-sm placeholder:text-xs
-                max-w-100 focus:outline-none bg-zinc-200 py-2 px-3 rounded-md
-                w-full dark:bg-accent/50"
+                max-w-100 focus:outline-none py-2 px-3 w-full dark:bg-black
+                bg-zinc-200 border-myborder border"
               placeholder="*****"
               {...register("password", { required: true })}
             />
