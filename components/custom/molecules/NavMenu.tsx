@@ -7,6 +7,7 @@ import { motion } from "motion/react";
 import { useState } from "react";
 import { IconUserPlus } from "@tabler/icons-react";
 import CustomButton from "../atoms/CustomButton";
+import { ModeToggle } from "./ModeToggle";
 
 export default function NavMenu() {
   const [isExpand, setExpand] = useState(false);
@@ -16,29 +17,36 @@ export default function NavMenu() {
       layout
       animate={isExpand ? { width: 200 } : { width: 65 }}
       className="h-screen border-r border-neutral-400 dark:border-neutral-800
-        w-auto bg-neutral-300 dark:bg-accent/30 flex flex-col gap-y-2"
+        w-auto bg-neutral-300 dark:bg-accent/30 flex justify-between flex-col
+        gap-y-2"
     >
       {" "}
-      <div className="flex flex-col mt-3 px-3 items-end">
+      <div>
         {" "}
-        <Button
-          onClick={() => setExpand(!isExpand)}
-          className={cn(
-            "max-w-10 w-full dark:bg-neutral-900 bg-neutral-200 rounded-sm",
-            isExpand ? "cursor-w-resize" : "cursor-e-resize",
-          )}
-        >
-          {isExpand ? (
-            <Collapse className="stroke-neutral-500 size-6 stroke-2" />
-          ) : (
-            <Expand className="stroke-neutral-500 size-6 stroke-2" />
-          )}
-        </Button>
+        <div className="flex flex-col mt-3 px-3 items-end">
+          {" "}
+          <Button
+            onClick={() => setExpand(!isExpand)}
+            className={cn(
+              "max-w-10 w-full dark:bg-neutral-900 bg-neutral-200 rounded-sm",
+              isExpand ? "cursor-w-resize" : "cursor-e-resize",
+            )}
+          >
+            {isExpand ? (
+              <Collapse className="stroke-neutral-500 size-6 stroke-2" />
+            ) : (
+              <Expand className="stroke-neutral-500 size-6 stroke-2" />
+            )}
+          </Button>
+        </div>
+        <div className="flex mt-5 flex-col px-3 items-start">
+          <CustomButton href="/dashboard/add-user" isExpand={isExpand}>
+            <IconUserPlus className="stroke-neutral-800 dark:stroke-neutral-200" />
+          </CustomButton>
+        </div>
       </div>
-      <div className="flex mt-5 flex-col px-3 items-start">
-        <CustomButton href="/dashboard/add-user" isExpand={isExpand}>
-          <IconUserPlus className="stroke-neutral-800 dark:stroke-neutral-200" />
-        </CustomButton>
+      <div className="flex w-full items- justify-start bg- m-3">
+        <ModeToggle />
       </div>
     </motion.div>
   );

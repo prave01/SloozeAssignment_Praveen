@@ -8,7 +8,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <NavMenu />
         <div className="p-2 h-screen w-full">
           {" "}
-          <div className="border dark:border-neutral-800 border-neutral-400 h-full">
+          <div
+            className="border dark:border-neutral-800 border-neutral-400 h-full
+              bg-transparent"
+          >
             {" "}
             {children}
           </div>

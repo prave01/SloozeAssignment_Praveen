@@ -8,10 +8,7 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 
 export default function Home() {
-  useEffect(() => {
-    const res = getRestaurant("Sivan");
-    console.log(res);
-  }, []);
+  useEffect(() => { }, []);
 
   return (
     <div className="p-4">

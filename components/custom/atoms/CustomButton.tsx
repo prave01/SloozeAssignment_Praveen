@@ -21,7 +21,7 @@ export default function CustomButton({
   console.log("href", href);
 
   return (
-    <Link href={href} className="flex group gap-2 items-center w-full">
+    <Link href={href} className="flex group gap-4 items-center w-full">
       {" "}
       <Button
         className={cn(

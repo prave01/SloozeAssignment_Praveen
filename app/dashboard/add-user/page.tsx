@@ -1,3 +1,5 @@
-export default function AddUser() {
-  return <div className="text-red-500">asdfasd</div>;
+import { AddUserPage } from "@/components/custom/pages/AddUserPage";
+
+export default function Page() {
+  return <AddUserPage />;
 }
