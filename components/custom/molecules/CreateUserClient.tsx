@@ -2,20 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { SelectGroup, SelectValue } from "@/components/ui/select";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-} from "@/components/ui/select";
 import { X } from "lucide-react";
 import { useState } from "react";
+import { SelectRoleClient } from "./SelectRoleClient";
+import { SelectLocationClient } from "./SelectLocationClient";
 
 export const CreateUserClient = () => {
-  const [role, selectRole] = useState<string>();
   const [image, setImage] = useState<File | null>(null);
+  const [role, selectRole] = useState<string>();
+  const [location, selectLocation] = useState<"india" | "america">();
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith("image/")) return;
@@ -23,8 +18,8 @@ export const CreateUserClient = () => {
   };
   return (
     <Card
-      className="bg-black p-0 rounded-none shadow-none border-none gap-2
-        max-w-100 w-full"
+      className="bg-transparent backdrop-blur-sm p-0 rounded-none shadow-none
+        border-none gap-2 max-w-100 w-full"
     >
       <CardTitle className="border-myborder border py-2 px-3 text-lg">
         Create New User
@@ -54,33 +49,15 @@ export const CreateUserClient = () => {
               placeholder:italic focus:outline-none focus:bg-zinc-500/20 border
               border-myborder px-2 py-2"
           />
-          <label htmlFor="role">
-            Role <span className="text-sm font-medium text-red-500/50">*</span>
-          </label>
-          <Select required onValueChange={selectRole}>
-            <SelectTrigger
-              className="w-45 p-2 border border-myborder rounded-none
-                justify-start"
-            >
-              <SelectValue
-                placeholder="Select Role"
-                className="mx-0 p-2 placeholder:px-0"
-              />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {" "}
-                <SelectLabel>roles</SelectLabel>
-                <SelectItem value="manager">Manager</SelectItem>
-                <SelectItem value="member">Member</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>{" "}
-          <label className="mt-2">Profile Image </label>
+          <div className="flex justify-between">
+            <SelectRoleClient selectRole={selectRole} />
+            <SelectLocationClient selectLocation={selectLocation} />
+          </div>
+          <label>Profile Image </label>
           <div
             className="relative flex flex-col items-center justify-center border
-              border-dashed border-myborder h-36 cursor-pointer text-sm
-              hover:bg-zinc-500/10 transition"
+              bg-zinc-500/10 border-dashed border-myborder h-36 cursor-pointer
+              text-sm hover:bg-zinc-500/10 transition"
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => {
               e.preventDefault();

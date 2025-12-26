@@ -3,7 +3,6 @@
 import { ModeToggle } from "@/components/custom/molecules/ModeToggle";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth-client";
-import { getRestaurant } from "@/server-actions/serverFn";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
