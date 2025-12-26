@@ -1,6 +1,12 @@
 "use server";
 
-import { item, menu, restaurant, type RestaurantType } from "@/lib/database";
+import {
+  item,
+  menu,
+  restaurant,
+  userProfile,
+  type RestaurantType,
+} from "@/lib/database";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/database/drizzle";
 import { v7 } from "uuid";
@@ -11,9 +17,11 @@ import {
   type CreateMenu,
   FeedItems,
   FeedItemsSchema,
+  type CreateUserServerType,
 } from "./zod-schema";
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
+import cloudinary from "@/lib/cloudinary";
 
 // Create restaurant in any location
 export const createRestaurant = async ({
@@ -48,8 +56,6 @@ export const createRestaurant = async ({
     throw err;
   }
 };
-
-export const verifyUserSession = async () => { };
 
 // Create menu for the restaurant
 export const createMenu = async ({ restaurantName }: CreateMenu) => {
@@ -127,6 +133,90 @@ export const feedMenuItems = async (items: FeedItems[]) => {
       .returning();
 
     return feededItems;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const uploadImage = async (file: File) => {
+  // const user = await auth.api.getSession({
+  //   headers: await headers(),
+  // });
+  //
+  // if (!user?.session) {
+  //   throw new Error("You are not authenticated");
+  // }
+
+  if (!file) {
+    throw new Error("No file provided");
+  }
+
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Only image files are allowed");
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    throw new Error("Image must be less than 5MB");
+  }
+
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  const result = await new Promise<any>((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream(
+        {
+          folder: "users",
+          resource_type: "image",
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        },
+      )
+      .end(buffer);
+  });
+
+  return {
+    url: result.secure_url as string,
+  };
+};
+
+export const CreateUser = async ({
+  email,
+  name,
+  password,
+  role,
+  image,
+  location,
+}: CreateUserServerType) => {
+  try {
+    const imageUrl =
+      typeof image === "string" && image.trim().length > 0 ? image : undefined;
+
+    const res = await auth.api.signUpEmail({
+      body: {
+        email,
+        name,
+        password,
+        image: imageUrl,
+      },
+    });
+
+    if (!res.user.id) {
+      throw new Error("Something bad happended while creating the user");
+    }
+
+    const [user] = await db
+      .insert(userProfile)
+      .values({
+        userId: res.user.id,
+        role,
+        location,
+      })
+      .returning();
+
+    return user;
   } catch (err: any) {
     throw err;
   }

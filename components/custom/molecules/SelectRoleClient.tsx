@@ -11,16 +11,16 @@ import {
 } from "@/components/ui/select";
 
 export const SelectRoleClient = ({
-  selectRole,
+  onChange,
 }: {
-  selectRole: (data: string) => void;
+  onChange: (value: "member" | "manager") => void;
 }) => {
   return (
     <div className="gap-2 flex flex-col">
       <label>
         Role <span className="text-sm font-medium text-red-500/50">*</span>
       </label>
-      <Select required onValueChange={selectRole}>
+      <Select required onValueChange={onChange}>
         <SelectTrigger
           className="w-45 p-2 border border-myborder rounded-none
           justify-start"
@@ -32,7 +32,6 @@ export const SelectRoleClient = ({
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            {" "}
             <SelectLabel>roles</SelectLabel>
             <SelectItem value="manager">Manager</SelectItem>
             <SelectItem value="member">Member</SelectItem>

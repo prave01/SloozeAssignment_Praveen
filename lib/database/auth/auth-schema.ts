@@ -9,14 +9,12 @@ import {
 
 import { relations } from "drizzle-orm";
 
-export const rolesEnum = pgEnum("role", ["Admin", "Manager", "Member"]);
+export const rolesEnum = pgEnum("role", ["admin", "manager", "member"]);
 export const locationEnum = pgEnum("location", ["america", "india"]);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
-  role: rolesEnum().notNull(),
-  location: rolesEnum().notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   image: text("image"),
@@ -25,6 +23,15 @@ export const user = pgTable("user", {
     .defaultNow()
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
+});
+
+export const userProfile = pgTable("user_profile", {
+  userId: text("user_id")
+    .primaryKey()
+    .references(() => user.id, { onDelete: "cascade" }),
+
+  role: rolesEnum().notNull(),
+  location: locationEnum().notNull(),
 });
 
 export const session = pgTable(
@@ -86,7 +93,12 @@ export const verification = pgTable(
   (table) => [index("verification_identifier_idx").on(table.identifier)],
 );
 
-export const userRelations = relations(user, ({ many }) => ({
+export const userRelations = relations(user, ({ one, many }) => ({
+  profile: one(userProfile, {
+    fields: [user.id],
+    references: [userProfile.userId],
+  }),
+
   sessions: many(session),
   accounts: many(account),
 }));

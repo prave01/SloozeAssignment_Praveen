@@ -7,18 +7,21 @@ import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { ErrorContext } from "better-auth/react";
 import { toast } from "sonner";
-
-interface LoginInputs {
-  email: string;
-  password: string;
-}
+import { LoginResolver, type LoginType } from "@/client/zod-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function LoginCard() {
-  const { register, handleSubmit } = useForm<LoginInputs>();
+  const {
+    register,
+    handleSubmit,
+    formState: { isValid },
+  } = useForm<LoginType>({
+    resolver: zodResolver(LoginResolver),
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ErrorContext | null>(null);
 
-  const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
+  const onSubmit: SubmitHandler<LoginType> = async (data) => {
     try {
       await authClient.signIn.email(
         {
@@ -102,7 +105,7 @@ export default function LoginCard() {
             </div>
           )}
           <Button
-            disabled={loading}
+            disabled={loading || !isValid}
             type="submit"
             className="w-fit mx-auto cursor-pointer"
           >

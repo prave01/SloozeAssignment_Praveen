@@ -6,33 +6,97 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { SelectRoleClient } from "./SelectRoleClient";
 import { SelectLocationClient } from "./SelectLocationClient";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CreateUserResolver, CreateUserType } from "@/client/zod-schema";
+import { toast } from "sonner";
+import { Eye, EyeOff } from "lucide-react";
+import { Controller } from "react-hook-form";
+import { CreateUser, uploadImage } from "@/server/serverFn";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Spinner } from "@/components/ui/spinner";
 
 export const CreateUserClient = () => {
   const [image, setImage] = useState<File | null>(null);
-  const [role, selectRole] = useState<string>();
-  const [location, selectLocation] = useState<"india" | "america">();
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { isValid },
+  } = useForm({
+    resolver: zodResolver(CreateUserResolver),
+    mode: "onChange",
+  });
 
   const handleFile = (file: File) => {
-    if (!file.type.startsWith("image/")) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Only image files are allowed");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
     setImage(file);
   };
+
+  const onSubmit: SubmitHandler<CreateUserType> = async (data) => {
+    try {
+      let imageUrl = "";
+
+      setLoading(true);
+
+      if (image) {
+        const result = await uploadImage(image);
+        imageUrl = result.url;
+      }
+
+      const result = await CreateUser({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        role: data.role,
+        location: data.location,
+        image: imageUrl,
+      });
+
+      toast.success("User created successfully", {
+        description: `UserId - ${result.userId}`,
+      });
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Signup failed", { description: String(err?.message) });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Card
       className="bg-transparent backdrop-blur-sm p-0 rounded-none shadow-none
         border-none gap-2 max-w-100 w-full"
     >
-      <CardTitle className="border-myborder border py-2 px-3 text-lg">
+      <CardTitle className="border-myborder border py-2 px-3 text-xl">
         Create New User
       </CardTitle>
       <CardContent className="border border-myborder px-3 py-2 rounded-none">
-        <form className="w-full h-auto flex flex-col gap-2">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full h-auto flex flex-col gap-2"
+        >
           <label htmlFor="name">
             Name <span className="text-sm font-medium text-red-500/50">*</span>
           </label>
           <input
             required
             id="name"
-            placeholder="eg. tony-start"
+            placeholder="eg. Tony Stark"
+            {...register("name", { required: true })}
             className="rounded-none placeholder:text-xs text-sm w-full
               placeholder:pl-1 placeholder:italic focus:outline-none
               focus:bg-zinc-500/20 border border-myborder px-2 py-2"
@@ -45,13 +109,55 @@ export const CreateUserClient = () => {
             id="email"
             type="email"
             placeholder="eg. example@email.com"
+            {...register("email", { required: true })}
             className="rounded-none placeholder:text-xs text-sm placeholder:pl-1
               placeholder:italic focus:outline-none focus:bg-zinc-500/20 border
               border-myborder px-2 py-2"
           />
+
+          <label htmlFor="password">
+            Create Password{" "}
+            <span className="text-sm font-medium text-red-500/50">*</span>
+          </label>
+
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="****"
+              {...register("password", { required: true })}
+              className="rounded-none placeholder:text-xs text-sm
+                placeholder:pl-1 placeholder:italic focus:outline-none
+                focus:bg-zinc-500/20 border border-myborder px-2 py-2 w-full
+                pr-10"
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              className="absolute right-2 cursor-pointer pr-2 top-1/2
+                -translate-y-1/2 text-muted-foreground hover:text-foreground
+                transition"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
           <div className="flex justify-between">
-            <SelectRoleClient selectRole={selectRole} />
-            <SelectLocationClient selectLocation={selectLocation} />
+            <Controller
+              name="role"
+              control={control}
+              render={({ field }) => (
+                <SelectRoleClient onChange={field.onChange} />
+              )}
+            />
+            <Controller
+              name="location"
+              control={control}
+              render={({ field }) => (
+                <SelectLocationClient onChange={field.onChange} />
+              )}
+            />
           </div>
           <label>Profile Image </label>
           <div
@@ -81,15 +187,18 @@ export const CreateUserClient = () => {
                 <p className="text-xs text-muted-foreground">
                   or click to select
                 </p>
+                <p className="text-xs text-orange-500">max size - 5mb</p>
               </>
             ) : (
               <div className="relative">
-                {/* Image Preview */}
-                <img
-                  src={URL.createObjectURL(image)}
-                  alt="preview"
-                  className="h-32 w-32 object-cover border"
-                />
+                <Avatar className="size-20">
+                  <AvatarImage
+                    className="object-cover"
+                    alt="preview"
+                    src={URL.createObjectURL(image)}
+                  />
+                  <AvatarFallback>AN</AvatarFallback>
+                </Avatar>
 
                 <button
                   type="button"
@@ -105,8 +214,12 @@ export const CreateUserClient = () => {
               </div>
             )}
           </div>
-          <Button type="submit" className="m-2 w-40 mx-auto">
-            Submit
+          <Button
+            type="submit"
+            disabled={!isValid || loading}
+            className="m-2 w-40 mx-auto"
+          >
+            {loading ? <Spinner className="size-6" /> : "Create"}
           </Button>
         </form>
       </CardContent>

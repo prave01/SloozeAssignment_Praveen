@@ -11,16 +11,16 @@ import {
 } from "@/components/ui/select";
 
 export const SelectLocationClient = ({
-  selectLocation,
+  onChange,
 }: {
-  selectLocation: (data: "india" | "america") => void;
+  onChange: (data: "india" | "america") => void;
 }) => {
   return (
     <div className="gap-2 flex flex-col">
       <label>
         Location <span className="text-sm font-medium text-red-500/50">*</span>
       </label>
-      <Select required onValueChange={selectLocation}>
+      <Select required onValueChange={onChange}>
         <SelectTrigger
           className="w-45 p-2 border border-myborder rounded-none
           justify-start"

@@ -1,5 +1,16 @@
 import { z } from "zod";
 
+export const CreateUserSchema = z.object({
+  name: z.string(),
+  email: z.email(),
+  password: z.string(),
+  location: z.enum(["india", "america"]),
+  image: z.string().optional(),
+  role: z.enum(["member", "manager"]),
+});
+
+export type CreateUserServerType = z.infer<typeof CreateUserSchema>;
+
 export const CreateRestaurantSchema = z.object({
   name: z.string(),
   location: z.enum(["india", "america"]),
