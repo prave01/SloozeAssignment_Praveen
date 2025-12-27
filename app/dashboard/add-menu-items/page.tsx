@@ -18,7 +18,7 @@ export default function Page() {
             <CreateItem />
             <div
               tabIndex={0}
-              className="group w-1/3 h-full flex flex-col gap-2�
+              className="group w-1/3 h-full flex flex-col gap-2
                 focus:outline-none"
             >
               <CardTitle
@@ -26,7 +26,7 @@ export default function Page() {
                   transition-all duration-200
                   group-focus-within:border-blue-500/40"
               >
-                Add Menu Items
+                Add Items To Menu
               </CardTitle>
 
               <CardContent

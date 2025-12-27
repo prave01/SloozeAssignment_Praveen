@@ -6,12 +6,7 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { SelectRoleClient } from "./SelectRoleClient";
 import { SelectLocationClient } from "./SelectLocationClient";
-import {
-  RegisterOptions,
-  SubmitHandler,
-  useForm,
-  UseFormRegisterReturn,
-} from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateUserResolver, CreateUserType } from "@/client/zod-schema";
 import { toast } from "sonner";

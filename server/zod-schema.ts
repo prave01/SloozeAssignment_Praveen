@@ -24,13 +24,15 @@ export const CreateMenuSchema = z.object({
 
 export type CreateMenu = z.infer<typeof CreateMenuSchema>;
 
-const ItemBaseSchema = z.object({
+export const ItemBaseSchema = z.object({
   name: z.string(),
   cost: z.number().positive(),
   menuId: z.string(),
   elapsedTime: z.string(),
   imageUrl: z.string(),
 });
+
+export type CreateItemType = z.infer<typeof ItemBaseSchema>;
 
 export const FeedItemsSchema = z.array(ItemBaseSchema);
 

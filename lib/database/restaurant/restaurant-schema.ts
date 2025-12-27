@@ -1,6 +1,7 @@
 import { pgTable, text, integer, pgEnum, uuid } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 import { userProfile } from "../auth/auth-schema";
+import { primaryKey } from "drizzle-orm/pg-core";
 
 export const locationEnum = pgEnum("location", ["america", "india"]);
 
@@ -20,14 +21,28 @@ export const menu = pgTable("menu", {
 
 export const item = pgTable("item", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
-  menuId: text("menuId")
-    .notNull()
-    .references(() => menu.id, { onDelete: "cascade" }),
   name: text("name").notNull(),
   imageUrl: text("imageUrl").notNull(),
   cost: integer().default(0).notNull(),
   elapsedTime: text("elapsedTime").notNull(),
 });
+
+export const menuItem = pgTable(
+  "menu_item",
+  {
+    menuId: text("menuId")
+      .notNull()
+      .references(() => menu.id, { onDelete: "cascade" }),
+
+    itemId: uuid("itemId")
+      .notNull()
+      .references(() => item.id, { onDelete: "cascade" }),
+  },
+  (t) => ({
+    pk: primaryKey({ columns: [t.menuId, t.itemId] }),
+  }),
+);
+
 export const restaurantRelations = relations(restaurant, ({ one, many }) => ({
   menu: one(menu),
   profile: many(userProfile),
@@ -41,4 +56,19 @@ export const menuRelations = relations(menu, ({ one, many }) => ({
   items: many(item),
 }));
 
+export const itemRelations = relations(item, ({ many }) => ({
+  menu: many(menu),
+}));
+
 export type RestaurantType = typeof restaurant.$inferInsert;
+
+export const menuItemRelations = relations(menuItem, ({ one }) => ({
+  menu: one(menu, {
+    fields: [menuItem.menuId],
+    references: [menu.id],
+  }),
+  item: one(item, {
+    fields: [menuItem.itemId],
+    references: [item.id],
+  }),
+}));
