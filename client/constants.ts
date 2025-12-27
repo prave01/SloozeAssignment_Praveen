@@ -1,6 +1,6 @@
 "use client";
 
-import { IconUserPlus, IconHome } from "@tabler/icons-react";
+import { IconUserPlus, IconHome, IconSquarePlus } from "@tabler/icons-react";
 import { ComponentType } from "react";
 
 interface NavLinks {
@@ -19,5 +19,10 @@ export const Links: NavLinks[] = [
     href: "/dashboard/add-user",
     label: "Add Users",
     icon: IconUserPlus,
+  },
+  {
+    href: "/dashboard/add-menu-items",
+    label: "Add Menu Items",
+    icon: IconSquarePlus,
   },
 ];

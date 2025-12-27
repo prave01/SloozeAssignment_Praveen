@@ -58,23 +58,23 @@ export const createRestaurant = async ({
 };
 
 // Create menu for the restaurant
-export const createMenu = async ({ restaurantName }: CreateMenu) => {
-  console.log(
-    "\x1b[36m%s\x1b[0m",
-    `Creating new menu for restaurant: ${restaurantName}`,
-  );
-
+export const createMenu = async ({ location }: CreateMenu) => {
   const parsed = CreateMenuSchema.safeParse({
-    restaurantName,
+    location,
   });
 
   if (!parsed.success) {
     throw new Error(`Invalid input:\n ${parsed.error.message}`);
   }
 
-  const { restaurantName: name } = parsed.data;
+  const { location: restaurantLocation } = parsed.data;
 
-  const restaurantData = await getRestaurant(name);
+  const restaurantData = await getRestaurant(restaurantLocation);
+
+  console.log(
+    "\x1b[36m%s\x1b[0m",
+    `Creating new menu for restaurant: ${restaurantData.name},${location}`,
+  );
 
   if (!restaurantData) {
     throw new Error("Restaurant not available");
@@ -96,17 +96,19 @@ export const createMenu = async ({ restaurantName }: CreateMenu) => {
 };
 
 // Get restaurant
-export const getRestaurant = async (name: string): Promise<RestaurantType> => {
-  const user = await auth.api.getSession({
-    headers: await headers(),
-  });
+export const getRestaurant = async (
+  location: "america" | "india",
+): Promise<RestaurantType> => {
+  // const user = await auth.api.getSession({
+  //   headers: await headers(),
+  // });
 
-  if (!user?.session) {
-    throw new Error("You are not authenticated");
-  }
+  // if (!user?.session) {
+  //   throw new Error("You are not authenticated");
+  // }
 
   const result = await db.query.restaurant.findFirst({
-    where: eq(restaurant.name, name),
+    where: eq(restaurant.location, location),
   });
 
   if (!result) {
@@ -117,7 +119,7 @@ export const getRestaurant = async (name: string): Promise<RestaurantType> => {
 };
 
 // Feeding items into the menu
-export const feedMenuItems = async (items: FeedItems[]) => {
+export const FeedMenuItems = async (items: FeedItems[]) => {
   const parsed = FeedItemsSchema.safeParse(items);
 
   if (!parsed.success) {
@@ -188,9 +190,11 @@ export const CreateUser = async ({
   password,
   role,
   image,
-  location,
+  location: restaurantLocation,
 }: CreateUserServerType) => {
   try {
+    const { id: restaurantID } = await getRestaurant(restaurantLocation);
+
     const imageUrl =
       typeof image === "string" && image.trim().length > 0 ? image : undefined;
 
@@ -212,7 +216,8 @@ export const CreateUser = async ({
       .values({
         userId: res.user.id,
         role,
-        location,
+        location: restaurantLocation,
+        restaurantID: restaurantID,
       })
       .returning();
 

@@ -8,6 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { relations } from "drizzle-orm";
+import { restaurant } from "../restaurant/restaurant-schema";
 
 export const rolesEnum = pgEnum("role", ["admin", "manager", "member"]);
 export const locationEnum = pgEnum("location", ["america", "india"]);
@@ -32,6 +33,7 @@ export const userProfile = pgTable("user_profile", {
 
   role: rolesEnum().notNull(),
   location: locationEnum().notNull(),
+  restaurantID: text("restaurant_id").references(() => restaurant.id),
 });
 
 export const session = pgTable(
@@ -98,9 +100,15 @@ export const userRelations = relations(user, ({ one, many }) => ({
     fields: [user.id],
     references: [userProfile.userId],
   }),
-
   sessions: many(session),
   accounts: many(account),
+}));
+
+export const userProfileRelations = relations(userProfile, ({ one }) => ({
+  user: one(restaurant, {
+    fields: [userProfile.restaurantID],
+    references: [restaurant.id],
+  }),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({

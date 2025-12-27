@@ -1,5 +1,6 @@
 import { pgTable, text, integer, pgEnum, uuid } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
+import { userProfile } from "../auth/auth-schema";
 
 export const locationEnum = pgEnum("location", ["america", "india"]);
 
@@ -27,9 +28,9 @@ export const item = pgTable("item", {
   cost: integer().default(0).notNull(),
   elapsedTime: text("elapsedTime").notNull(),
 });
-
-export const restaurantRelations = relations(restaurant, ({ one }) => ({
+export const restaurantRelations = relations(restaurant, ({ one, many }) => ({
   menu: one(menu),
+  profile: many(userProfile),
 }));
 
 export const menuRelations = relations(menu, ({ one, many }) => ({

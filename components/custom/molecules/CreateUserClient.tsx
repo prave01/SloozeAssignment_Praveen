@@ -6,7 +6,12 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import { SelectRoleClient } from "./SelectRoleClient";
 import { SelectLocationClient } from "./SelectLocationClient";
-import { SubmitHandler, useForm } from "react-hook-form";
+import {
+  RegisterOptions,
+  SubmitHandler,
+  useForm,
+  UseFormRegisterReturn,
+} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateUserResolver, CreateUserType } from "@/client/zod-schema";
 import { toast } from "sonner";
@@ -15,6 +20,7 @@ import { Controller } from "react-hook-form";
 import { CreateUser, uploadImage } from "@/server/serverFn";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
+import { CustomInput } from "../atoms/CustomInput";
 
 export const CreateUserClient = () => {
   const [image, setImage] = useState<File | null>(null);
@@ -56,7 +62,7 @@ export const CreateUserClient = () => {
         imageUrl = result.url;
       }
 
-      const result = await CreateUser({
+      await CreateUser({
         name: data.name,
         email: data.email,
         password: data.password,
@@ -87,53 +93,36 @@ export const CreateUserClient = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="w-full h-auto flex flex-col gap-2"
         >
-          <label htmlFor="name">
-            Name <span className="text-sm font-medium text-red-500/50">*</span>
-          </label>
-          <input
-            required
-            id="name"
-            placeholder="eg. Tony Stark"
-            {...register("name", { required: true })}
-            className="rounded-none placeholder:text-xs text-sm w-full
-              placeholder:pl-1 placeholder:italic focus:outline-none
-              focus:bg-zinc-500/20 border border-myborder px-2 py-2"
+          <CustomInput
+            name={"Name"}
+            label={"name"}
+            placeholder={"eg. Tony-Stark"}
+            register={register}
+            isMandatory={true}
+            type="text"
           />
-          <label htmlFor="email">
-            Email <span className="text-sm font-medium text-red-500/50">*</span>
-          </label>
-          <input
-            required
-            id="email"
+          <CustomInput
+            name="Email"
             type="email"
+            isMandatory={true}
+            label="email"
             placeholder="eg. example@email.com"
-            {...register("email", { required: true })}
-            className="rounded-none placeholder:text-xs text-sm placeholder:pl-1
-              placeholder:italic focus:outline-none focus:bg-zinc-500/20 border
-              border-myborder px-2 py-2"
+            register={register}
           />
 
-          <label htmlFor="password">
-            Create Password{" "}
-            <span className="text-sm font-medium text-red-500/50">*</span>
-          </label>
-
-          <div className="relative">
-            <input
-              id="password"
+          <div className="relative flex gap-2 flex-col">
+            <CustomInput
+              name="Create Password"
+              isMandatory={true}
+              label="password"
               type={showPassword ? "text" : "password"}
+              register={register}
               placeholder="*****"
-              {...register("password", { required: true })}
-              className="rounded-none placeholder:text-xs text-sm
-                placeholder:pl-1 placeholder:italic focus:outline-none
-                focus:bg-zinc-500/20 border border-myborder px-2 py-2 w-full
-                pr-10"
             />
-
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-2 cursor-pointer pr-2 top-1/2
+              className="absolute right-1 cursor-pointer pr-2 top-12.5
                 -translate-y-1/2 text-muted-foreground hover:text-foreground
                 transition"
               aria-label={showPassword ? "Hide password" : "Show password"}
@@ -157,7 +146,7 @@ export const CreateUserClient = () => {
               )}
             />
           </div>
-          <label>Profile Image </label>
+          <label>Profile Image</label>
           <div
             className="relative flex flex-col items-center justify-center border
               bg-zinc-500/10 border-dashed border-myborder h-36 cursor-pointer

@@ -3,11 +3,15 @@
 import { ModeToggle } from "@/components/custom/molecules/ModeToggle";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth-client";
+import { createRestaurant } from "@/server/serverFn";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
 export default function Home() {
-  useEffect(() => { }, []);
+  useEffect(() => {
+    const result = createRestaurant({ location: "india", name: "PiedPiper" });
+    console.log(result);
+  }, []);
 
   return (
     <div className="p-4">

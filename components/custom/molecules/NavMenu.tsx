@@ -15,7 +15,7 @@ export default function NavMenu() {
   return (
     <motion.div
       layout
-      animate={isExpand ? { width: 200 } : { width: 65 }}
+      animate={isExpand ? { width: 250 } : { width: 65 }}
       className="h-screen border-r border-neutral-400 dark:border-neutral-800
         w-auto bg-neutral-300 dark:bg-accent/30 flex justify-between flex-col
         gap-y-2"
@@ -42,6 +42,7 @@ export default function NavMenu() {
         <div className="flex gap-4 mt-5 flex-col px-3 items-start">
           {Links.map((item) => (
             <CustomButton
+              key={item.label}
               label={item.label}
               href={item.href}
               isExpand={isExpand}

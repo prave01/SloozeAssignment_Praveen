@@ -19,7 +19,7 @@ export const CreateRestaurantSchema = z.object({
 export type CreateRestaurant = z.infer<typeof CreateRestaurantSchema>;
 
 export const CreateMenuSchema = z.object({
-  restaurantName: z.string(),
+  location: z.enum(["america", "india"]),
 });
 
 export type CreateMenu = z.infer<typeof CreateMenuSchema>;
@@ -30,7 +30,6 @@ const ItemBaseSchema = z.object({
   menuId: z.string(),
   elapsedTime: z.string(),
   imageUrl: z.string(),
-  restaurantName: z.string(),
 });
 
 export const FeedItemsSchema = z.array(ItemBaseSchema);
