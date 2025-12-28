@@ -27,13 +27,8 @@ export type CreateMenu = z.infer<typeof CreateMenuSchema>;
 export const ItemBaseSchema = z.object({
   name: z.string(),
   cost: z.number().positive(),
-  menuId: z.string(),
   elapsedTime: z.string(),
-  imageUrl: z.string(),
+  image: z.string().optional(),
 });
 
 export type CreateItemType = z.infer<typeof ItemBaseSchema>;
-
-export const FeedItemsSchema = z.array(ItemBaseSchema);
-
-export type FeedItems = z.infer<typeof ItemBaseSchema>;

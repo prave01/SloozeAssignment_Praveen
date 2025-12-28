@@ -1,53 +1,74 @@
-import { CardContent, CardTitle } from '@/components/ui/card'
-import { CustomInput } from '../atoms/CustomInput'
-import { Controller, SubmitHandler, useForm } from 'react-hook-form'
-import { SelectLocationClient } from '../molecules/SelectLocationClient'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { X } from 'lucide-react'
-import { type CreateItemType, ItemBaseSchema } from '@/server/zod-schema'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { FeedMenuItems } from '@/server/serverFn'
+import { CardContent, CardTitle } from "@/components/ui/card";
+import { CustomInput } from "../atoms/CustomInput";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { X } from "lucide-react";
+import { type CreateItemType, ItemBaseSchema } from "@/server/zod-schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CreateItem, uploadImage } from "@/server/serverFn";
+import { Spinner } from "@/components/ui/spinner";
 
 export function CreateItemClient() {
-  const [image, setImage] = useState<File | null>(null)
+  const [image, setImage] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
-    control,
-    formState: { isValid },
+    formState: { isValid, errors },
   } = useForm({
     resolver: zodResolver(ItemBaseSchema),
-  })
+  });
+
+  useEffect(() => {
+    console.log(errors);
+  }, [errors]);
 
   const handleFile = (file: File) => {
-    if (!file.type.startsWith('image/')) {
-      toast.error('Only image files are allowed')
-      return
+    if (!file.type.startsWith("image/")) {
+      toast.error("Only image files are allowed");
+      return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size must be less than 5MB')
-      return
+      toast.error("Image size must be less than 5MB");
+      return;
     }
-  }
+
+    setImage(file);
+  };
 
   const onSubmit: SubmitHandler<CreateItemType> = async (data) => {
-    await FeedMenuItems([
-      {
+    try {
+      var res;
+
+      setLoading(true);
+
+      if (image) {
+        res = await uploadImage(image);
+      }
+
+      const createdItem = await CreateItem({
         name: data.name,
+        elapsedTime: data.elapsedTime,
         cost: data.cost,
-      },
-    ])
-  }
+        image: res?.url,
+      });
+
+      toast.success(`Item ${createdItem.name} Created Successfully`);
+    } catch (err: any) {
+      console.error(err);
+      toast.error("Creating Item Failed", { description: err });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div
-      tabIndex={}
-      className="group w-1/3 h-full flex flex-col gap-2 focus:outline-none"
-    >
+    <div className="group w-1/3 h-full flex flex-col gap-2 focus:outline-none">
       <CardTitle
         className="border border-myborder py-1 px-3 text-lg transition-all
           duration-200 group-focus-within:border-blue-500/40"
@@ -56,49 +77,43 @@ export function CreateItemClient() {
       </CardTitle>
 
       <CardContent
-        className="w-full h-full border border-myborder transition-all px-5 py-8
-          duration-200 group-focus-within:border-blue-500/40"
+        className="w-full h-full border flex items-center justify-center
+          border-myborder transition-all px-5 py-8 duration-200
+          group-focus-within:border-blue-500/40"
       >
         <form onSubmit={handleSubmit(onSubmit)}>
-          {' '}
+          {" "}
           <div className="flex gap-4 flex-col h-full w-[90%] mx-auto">
             <CustomInput
-              name="Item name"
-              isMandatory={true}
-              label="item-name"
+              name="name"
+              label="Item name"
               placeholder="eg. Pizza :)"
               register={register}
               type="text"
+              isMandatory={true}
             />
             <div className="flex gap-2">
-              {' '}
+              {" "}
               <CustomInput
-                name="Cost"
-                isMandatory={true}
-                label="cost"
-                placeholder="eg. Cost"
+                name="cost"
+                label="Cost"
+                placeholder="eg. 250"
                 register={register}
-                type="text"
+                type="number"
+                isMandatory={true}
               />
               <CustomInput
-                name="Elapsed Time"
-                isMandatory={true}
-                label="time"
+                name="elapsedTime"
+                label="Elapsed Time"
                 placeholder="eg. 10min"
                 register={register}
                 type="text"
+                isMandatory={true}
               />
             </div>
-            <Controller
-              name="role"
-              control={control}
-              render={({ field }) => (
-                <SelectLocationClient onChange={field.onChange} />
-              )}
-            />
 
             <div className="flex flex-col gap-2">
-              {' '}
+              {" "}
               <label>Item Image</label>
               <div
                 className="relative flex flex-col items-center justify-center
@@ -106,9 +121,9 @@ export function CreateItemClient() {
                   cursor-pointer text-sm hover:bg-zinc-500/10 transition"
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
-                  e.preventDefault()
-                  const file = e.dataTransfer.files?.[0]
-                  if (file) handleFile(file)
+                  e.preventDefault();
+                  const file = e.dataTransfer.files?.[0];
+                  if (file) handleFile(file);
                 }}
               >
                 <input
@@ -116,8 +131,8 @@ export function CreateItemClient() {
                   accept="image/*"
                   className="absolute inset-0 opacity-0 cursor-pointer"
                   onChange={(e) => {
-                    const file = e.target.files?.[0]
-                    if (file) handleFile(file)
+                    const file = e.target.files?.[0];
+                    if (file) handleFile(file);
                   }}
                 />
 
@@ -143,8 +158,8 @@ export function CreateItemClient() {
                     <button
                       type="button"
                       onClick={(e) => {
-                        e.stopPropagation()
-                        setImage(null)
+                        e.stopPropagation();
+                        setImage(null);
                       }}
                       className="absolute -top-2 -right-2 bg-black/70 text-white
                         rounded-full p-1 hover:bg-red-600 transition"
@@ -156,25 +171,25 @@ export function CreateItemClient() {
               </div>
             </div>
             {/* <div */}
-            {/*   className="border border-myborder relative w-full h-full */}
-            {/*     px-1 py-2 rounded-sm" */}
+            {/*   className="border border-myborder relative w-full h-full px-1 py-2 */}
+            {/*     rounded-sm" */}
             {/* > */}
             {/*   {" "} */}
             {/*   <Image */}
             {/*     src="https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80" */}
             {/*     alt="Photo by Drew Beamer" */}
             {/*     fill */}
-            {/*     className="h-full w-full rounded-sm absolute -z-10 */}
-            {/*       object-cover dark:brightness-[0.2] dark:grayscale" */}
+            {/*     className="h-full w-full rounded-sm absolute -z-10 object-cover */}
+            {/*       dark:brightness-[0.2] dark:grayscale" */}
             {/*   /> */}
             {/*   <HoverPreview /> */}
             {/* </div> */}
-            <Button disabled={!isValid} className="my-4 w-[70%] mx-auto">
-              Create Item
+            <Button type="submit" className="my-4 w-[70%] mx-auto">
+              {loading ? <Spinner className="size-6" /> : "Create Item"}
             </Button>
           </div>
         </form>
       </CardContent>
     </div>
-  )
+  );
 }

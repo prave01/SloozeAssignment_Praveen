@@ -2,7 +2,6 @@
 
 import {
   item,
-  menu,
   restaurant,
   userProfile,
   type RestaurantType,
@@ -15,13 +14,15 @@ import {
   CreateMenuSchema,
   type CreateRestaurant,
   type CreateMenu,
-  FeedItems,
-  FeedItemsSchema,
   type CreateUserServerType,
+  type CreateItemType,
+  ItemBaseSchema,
+  CreateUserSchema,
 } from "./zod-schema";
 import { auth } from "@/lib/auth/auth";
 import { headers } from "next/headers";
 import cloudinary from "@/lib/cloudinary";
+import { parse } from "path";
 
 // Create restaurant in any location
 export const createRestaurant = async ({
@@ -51,7 +52,9 @@ export const createRestaurant = async ({
       ])
       .returning();
 
-    return createdRestaurant;
+    const createdMenu = await createMenu({ location: restaurantLocation });
+
+    return { ...createdRestaurant, ...createdMenu };
   } catch (err) {
     throw err;
   }
@@ -70,11 +73,6 @@ export const createMenu = async ({ location }: CreateMenu) => {
   const { location: restaurantLocation } = parsed.data;
 
   const restaurantData = await getRestaurant(restaurantLocation);
-
-  console.log(
-    "\x1b[36m%s\x1b[0m",
-    `Creating new menu for restaurant: ${restaurantData.name},${location}`,
-  );
 
   if (!restaurantData) {
     throw new Error("Restaurant not available");
@@ -119,22 +117,33 @@ export const getRestaurant = async (
 };
 
 // Feeding items into the menu
-export const FeedMenuItems = async (items: FeedItems[]) => {
-  const parsed = FeedItemsSchema.safeParse(items);
+export const CreateItem = async (data: CreateItemType) => {
+  const parsed = ItemBaseSchema.safeParse(data);
 
   if (!parsed.success) {
     throw new Error(`Invalid input:\n ${parsed.error.message}`);
   }
 
-  const parsedItems = parsed.data;
+  const { name, cost, elapsedTime, image } = parsed.data;
+
+  const imageUrl =
+    typeof image === "string" && image.trim().length > 0 ? image : undefined;
 
   try {
-    const [feededItems] = await db
+    // Inserting value to the item table since the menu is already created
+    // when creating the restaurant
+
+    const [createdItem] = await db
       .insert(item)
-      .values([...parsedItems])
+      .values({
+        name,
+        image: imageUrl,
+        cost,
+        elapsedTime,
+      })
       .returning();
 
-    return feededItems;
+    return createdItem;
   } catch (err: any) {
     throw err;
   }
@@ -184,16 +193,17 @@ export const uploadImage = async (file: File) => {
   };
 };
 
-export const CreateUser = async ({
-  email,
-  name,
-  password,
-  role,
-  image,
-  location: restaurantLocation,
-}: CreateUserServerType) => {
+export const CreateUser = async (data: CreateUserServerType) => {
   try {
-    const { id: restaurantID } = await getRestaurant(restaurantLocation);
+    const parsed = CreateUserSchema.safeParse(data);
+
+    if (!parsed.success) {
+      throw new Error(`Invalid input:\n ${parsed.error.message}`);
+    }
+
+    const { name, location, password, role, email, image } = parsed.data;
+
+    const { id: restaurantID } = await getRestaurant(location);
 
     const imageUrl =
       typeof image === "string" && image.trim().length > 0 ? image : undefined;
@@ -216,7 +226,7 @@ export const CreateUser = async ({
       .values({
         userId: res.user.id,
         role,
-        location: restaurantLocation,
+        location,
         restaurantID: restaurantID,
       })
       .returning();

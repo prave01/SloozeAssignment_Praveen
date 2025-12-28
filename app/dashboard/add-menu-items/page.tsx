@@ -1,6 +1,6 @@
 "use client";
 
-import { CreateItem } from "@/components/custom/templates/CreateItem";
+import { CreateItemClient } from "@/components/custom/templates/CreateItem";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 
 export default function Page() {
@@ -15,7 +15,7 @@ export default function Page() {
             Add Menu Items
           </CardTitle>
           <CardContent className="border-myborder flex gap-4 p-4 w-full h-full border">
-            <CreateItem />
+            <CreateItemClient />
             <div
               tabIndex={0}
               className="group w-1/3 h-full flex flex-col gap-2

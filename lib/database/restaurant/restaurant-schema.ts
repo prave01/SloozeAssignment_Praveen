@@ -22,7 +22,7 @@ export const menu = pgTable("menu", {
 export const item = pgTable("item", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull(),
-  imageUrl: text("imageUrl").notNull(),
+  image: text("image"),
   cost: integer().default(0).notNull(),
   elapsedTime: text("elapsedTime").notNull(),
 });
