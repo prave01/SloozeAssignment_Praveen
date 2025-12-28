@@ -2,6 +2,7 @@
 
 import {
   item,
+  menu,
   restaurant,
   userProfile,
   type RestaurantType,
@@ -20,9 +21,7 @@ import {
   CreateUserSchema,
 } from "./zod-schema";
 import { auth } from "@/lib/auth/auth";
-import { headers } from "next/headers";
 import cloudinary from "@/lib/cloudinary";
-import { parse } from "path";
 
 // Create restaurant in any location
 export const createRestaurant = async ({

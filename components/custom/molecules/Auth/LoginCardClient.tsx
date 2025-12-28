@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { LoginResolver, type LoginType } from "@/client/zod-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-export default function LoginCard() {
+export default function LoginCardClient() {
   const {
     register,
     handleSubmit,
@@ -23,7 +23,7 @@ export default function LoginCard() {
 
   const onSubmit: SubmitHandler<LoginType> = async (data) => {
     try {
-      await authClient.signIn.email(
+      const result = await authClient.signIn.email(
         {
           email: data.email,
           password: data.password,
@@ -39,9 +39,18 @@ export default function LoginCard() {
           },
         },
       );
+
+      if (result.error) {
+        toast.error("Error While SignIn", {
+          description: result.error.message,
+        });
+      }
+
+      toast.success("LoggedIn Successfully");
     } catch (err) {
       setLoading(false);
       console.log("Error:", err);
+      toast.error("Error While Logging In");
     } finally {
       setLoading(false);
     }

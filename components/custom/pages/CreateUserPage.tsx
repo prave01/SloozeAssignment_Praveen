@@ -1,6 +1,6 @@
-import { CreateUserClient } from "../molecules/CreateUserClient";
+import { CreateUserClient } from "../molecules/CreateUser/CreateUserClient";
 
-export const AddUserPage = () => {
+export const CreateUserPage = () => {
   return (
     <div className="w-full h-full overflow-hidden relative bg-transparent">
       <div

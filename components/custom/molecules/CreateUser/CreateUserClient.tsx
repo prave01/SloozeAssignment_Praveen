@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { X } from "lucide-react";
 import { useState } from "react";
-import { SelectRoleClient } from "./SelectRoleClient";
-import { SelectLocationClient } from "./SelectLocationClient";
+import { SelectRoleClient } from "../SelectRoleClient";
+import { SelectLocationClient } from "../SelectLocationClient";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateUserResolver, CreateUserType } from "@/client/zod-schema";
@@ -15,7 +15,7 @@ import { Controller } from "react-hook-form";
 import { CreateUser, uploadImage } from "@/server/serverFn";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
-import { CustomInput } from "../atoms/CustomInput";
+import { CustomInput } from "../../atoms/CustomInput";
 
 export const CreateUserClient = () => {
   const [image, setImage] = useState<File | null>(null);
