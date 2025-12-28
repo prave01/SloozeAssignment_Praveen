@@ -235,3 +235,13 @@ export const CreateUser = async (data: CreateUserServerType) => {
     throw err;
   }
 };
+
+export const GetItems = async () => {
+  try {
+    const Items = await db.query.item.findMany();
+    console.log(Items);
+    return Items;
+  } catch (err: any) {
+    throw err;
+  }
+};
