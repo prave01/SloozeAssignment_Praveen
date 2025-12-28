@@ -21,7 +21,7 @@ export const Links: NavLinks[] = [
     icon: IconUserPlus,
   },
   {
-    href: "/dashboard/add-menu-items",
+    href: "/dashboard/menu",
     label: "Add Menu Items",
     icon: IconSquarePlus,
   },

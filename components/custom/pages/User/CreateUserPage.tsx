@@ -1,4 +1,4 @@
-import { CreateUserClient } from "../molecules/CreateUser/CreateUserClient";
+import { CreateUserClient } from "../../molecules/CreateUser/CreateUserClient";
 
 export const CreateUserPage = () => {
   return (

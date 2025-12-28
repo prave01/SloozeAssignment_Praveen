@@ -1,7 +1,7 @@
 "use client";
 
 import { CardContent, CardTitle } from "@/components/ui/card";
-import { CustomInput } from "../../atoms/CustomInput";
+import { CustomInput } from "@/components/custom/atoms/CustomInput";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
