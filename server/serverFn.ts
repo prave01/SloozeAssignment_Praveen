@@ -123,7 +123,7 @@ export const CreateItem = async (data: CreateItemType) => {
     throw new Error(`Invalid input:\n ${parsed.error.message}`);
   }
 
-  const { name, cost, elapsedTime, image } = parsed.data;
+  const { name, location, cost, elapsedTime, image } = parsed.data;
 
   const imageUrl =
     typeof image === "string" && image.trim().length > 0 ? image : undefined;
@@ -139,6 +139,7 @@ export const CreateItem = async (data: CreateItemType) => {
         image: imageUrl,
         cost,
         elapsedTime,
+        location,
       })
       .returning();
 
