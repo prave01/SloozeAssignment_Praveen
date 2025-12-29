@@ -2,16 +2,17 @@
 
 import { CardContent, CardTitle } from "@/components/ui/card";
 import { CustomInput } from "@/components/custom/atoms/CustomInput";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { X } from "lucide-react";
 import { type CreateItemType, ItemBaseSchema } from "@/server/zod-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateItem, uploadImage } from "@/server/serverFn";
 import { Spinner } from "@/components/ui/spinner";
+import { SelectLocationClient } from "../../SelectLocationClient";
 
 export function CreateItemClient() {
   const [image, setImage] = useState<File | null>(null);
@@ -20,14 +21,16 @@ export function CreateItemClient() {
   const {
     register,
     handleSubmit,
-    formState: { isValid, errors },
+    getValues,
+    setValue,
+    control,
+    formState: { isValid, errors, dirtyFields },
+    watch,
   } = useForm({
     resolver: zodResolver(ItemBaseSchema),
   });
 
-  useEffect(() => {
-    console.log(errors);
-  }, [errors]);
+  const location = watch("location");
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -58,6 +61,7 @@ export function CreateItemClient() {
         elapsedTime: data.elapsedTime,
         cost: data.cost,
         image: res?.url,
+        location: data.location,
       });
 
       toast.success(`Item ${createdItem.name} Created Successfully`);
@@ -87,28 +91,45 @@ export function CreateItemClient() {
           {" "}
           <div className="flex gap-4 flex-col h-full w-[90%] mx-auto">
             <CustomInput
-              name="name"
               label="Item name"
+              name="Item name"
+              control={control}
               placeholder="eg. Pizza :)"
-              register={register}
               type="text"
               isMandatory={true}
             />
+
+            <Controller
+              name="location"
+              control={control}
+              render={({ field }) => (
+                <div className="flex flex-row items-center justify-between">
+                  {" "}
+                  <SelectLocationClient onChange={field.onChange} />
+                  <span className="italic text-neutral-500 text-xs text-right pt-5">
+                    select appropriate location for right <br />
+                    currency (America - $ / India - ₹)
+                  </span>
+                </div>
+              )}
+            />
+
             <div className="flex gap-2">
               {" "}
               <CustomInput
-                name="cost"
+                name="Cost"
                 label="Cost"
-                placeholder="eg. 250"
-                register={register}
-                type="number"
+                control={control}
+                location={location}
+                placeholder="eg. 10 ($/₹)"
+                type="text"
                 isMandatory={true}
               />
               <CustomInput
-                name="elapsedTime"
+                name="Elapsed Time"
                 label="Elapsed Time"
                 placeholder="eg. 10min"
-                register={register}
+                control={control}
                 type="text"
                 isMandatory={true}
               />
@@ -186,7 +207,11 @@ export function CreateItemClient() {
             {/*   /> */}
             {/*   <HoverPreview /> */}
             {/* </div> */}
-            <Button type="submit" className="my-4 w-[70%] mx-auto">
+            <Button
+              type="submit"
+              disabled={!isValid || loading}
+              className="my-4 w-[70%] mx-auto"
+            >
               {loading ? <Spinner className="size-6" /> : "Create Item"}
             </Button>
           </div>

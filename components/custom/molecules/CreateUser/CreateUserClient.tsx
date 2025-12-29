@@ -91,6 +91,7 @@ export const CreateUserClient = () => {
           <CustomInput
             name={"Name"}
             label={"name"}
+            control={control}
             placeholder={"eg. Tony-Stark"}
             register={register}
             isMandatory={true}
@@ -99,6 +100,7 @@ export const CreateUserClient = () => {
           <CustomInput
             name="Email"
             type="email"
+            control={control}
             isMandatory={true}
             label="email"
             placeholder="eg. example@email.com"
@@ -108,6 +110,7 @@ export const CreateUserClient = () => {
           <div className="relative flex gap-2 flex-col">
             <CustomInput
               name="Create Password"
+              control={control}
               isMandatory={true}
               label="password"
               type={showPassword ? "text" : "password"}

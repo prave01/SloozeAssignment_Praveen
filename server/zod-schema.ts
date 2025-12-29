@@ -26,9 +26,10 @@ export type CreateMenu = z.infer<typeof CreateMenuSchema>;
 
 export const ItemBaseSchema = z.object({
   name: z.string(),
-  cost: z.number().positive(),
+  cost: z.string(),
   elapsedTime: z.string(),
   image: z.string().optional(),
+  location: z.enum(["america", "india"]),
 });
 
 export type CreateItemType = z.infer<typeof ItemBaseSchema>;
