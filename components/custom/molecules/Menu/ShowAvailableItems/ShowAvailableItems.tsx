@@ -1,18 +1,21 @@
+import { useItem } from "@/client/store";
 import { CustomSelectCard } from "@/components/custom/atoms/CustomSelectCard";
-import { Card, CardTitle, CardContent } from "@/components/ui/card";
+import { CardTitle, CardContent } from "@/components/ui/card";
 import { GetItems } from "@/server/serverFn";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export function ShowAvailableItems() {
-  const [items, setItems] = useState<any[]>([]);
+  const items = useItem((s) => s.itemsState);
+  const setItems = useItem((s) => s.setItems);
+
   useEffect(() => {
     const Items = async () => {
       const res = await GetItems();
-      console.log(res);
       setItems([...res]);
     };
     Items();
   }, []);
+
   return (
     <div className="group w-1/3 h-full flex flex-col gap-2 focus:outline-none">
       <CardTitle
@@ -23,19 +26,19 @@ export function ShowAvailableItems() {
       </CardTitle>
 
       <CardContent
-        className="w-full h-full border flex items-start justify-center
-          border-myborder transition-all p-3 duration-200
-          group-focus-within:border-blue-500/40"
+        className="flex-1 w-full border p-3 border-myborder transition-all
+          duration-200 group-focus-within:border-blue-500/40 overflow-y-auto
+          overflow-x-hidden relative overscroll-none"
       >
-        <div className="grid grid-cols-2 w-full gap-2">
+        <div className="grid absolute z-30 grid-cols-2 w-full gap-2">
           {items.map((item, idx) => (
             <CustomSelectCard
               key={idx}
               selectedCards={[]}
-              itemName={item?.name}
-              cost={item?.cost}
+              itemName={item.name}
+              cost={item.cost}
               elapsedTime={item.elapsedTime}
-              image={item.image}
+              image={item.image ?? ""}
             />
           ))}
         </div>

@@ -14,7 +14,10 @@ export function MenuItemsPage() {
           <CardTitle className="border-myborder border py-2 px-3 text-xl">
             Add Menu Items
           </CardTitle>
-          <CardContent className="border-myborder flex gap-4 p-4 w-full h-full border">
+          <CardContent
+            className="border-myborder flex gap-4 p-4 w-full bg-black h-full
+              border"
+          >
             <CreateItemClient />
             <ShowAvailableItems />
             <AddMenuItems />

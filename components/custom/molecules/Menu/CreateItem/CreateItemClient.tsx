@@ -14,10 +14,14 @@ import { CreateItem, uploadImage } from "@/server/serverFn";
 import { Spinner } from "@/components/ui/spinner";
 import { SelectLocationClient } from "../../SelectLocationClient";
 import { SelectDuration } from "../../SelectDuration";
+import { useItem } from "@/client/store";
 
 export function CreateItemClient() {
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const items = useItem((s) => s.itemsState);
+  const setItems = useItem((s) => s.setItems);
 
   const {
     handleSubmit,
@@ -63,9 +67,23 @@ export function CreateItemClient() {
         name: data.name,
         elapsedTime: data.elapsedTime,
         cost: data.cost,
-        image: res?.url,
+        image: res?.url || "",
         location: data.location,
       });
+
+      if (createdItem.id) {
+        // refreshing the available items
+        setItems([
+          ...items,
+          {
+            name: data.name,
+            elapsedTime: data.elapsedTime,
+            cost: data.cost,
+            location: data.location,
+            image: data.image,
+          },
+        ]);
+      }
 
       toast.success(`Item ${createdItem.name} Created Successfully`);
     } catch (err: any) {
@@ -96,7 +114,6 @@ export function CreateItemClient() {
             <CustomInput
               label="Item name"
               name="name"
-              control={control}
               placeholder="eg. Pizza :)"
               type="text"
               register={register}
@@ -123,11 +140,10 @@ export function CreateItemClient() {
               <CustomInput
                 name="cost"
                 label="Cost"
-                control={control}
                 location={location}
                 register={register}
                 placeholder="eg. 10 ($/₹)"
-                type="text"
+                type="number"
                 isMandatory={true}
               />
               <Controller
@@ -214,7 +230,11 @@ export function CreateItemClient() {
             {/*   /> */}
             {/*   <HoverPreview /> */}
             {/* </div> */}
-            <Button type="submit" className="my-4 w-[70%] mx-auto">
+            <Button
+              type="submit"
+              disabled={!isValid || loading}
+              className="my-4 w-[70%] mx-auto"
+            >
               {loading ? <Spinner className="size-6" /> : "Create Item"}
             </Button>
           </div>

@@ -23,7 +23,7 @@ export const SelectDuration = ({
         Duration <span className="text-sm font-medium text-red-500/50">*</span>
       </label>
 
-      <Select onValueChange={onChange}>
+      <Select required onValueChange={onChange}>
         <SelectTrigger className="w-45 p-2 border border-myborder rounded-none justify-start">
           <SelectValue placeholder="Select duration" />
         </SelectTrigger>

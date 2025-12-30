@@ -30,13 +30,14 @@ export function CustomSelectCard({
       className="rounded-md gap-2 flex flex-row p-2 items-start w-full h-full
         border-myborder"
     >
-      <div className="flex-1 flex flex-col gap-1 px-1 h-full rounded-sm">
-        <p className="rounded-sm font-semibold text-sm bg-black px-2 w-fit p-1">
+      <div className="flex-1 flex flex-col gap-1 h-full rounded-sm">
+        <p className="rounded-sm font-semibold px-2 py-1 text-sm bg-black w-fit">
           {itemName}
         </p>
-        <div className="flex flex-col gap-1 pl-1">
+        <div className="flex flex-col gap-1 pl-2">
           <p className="text-xs text-amber-100 font-semibold mt-1">
-            Cost - <span className="text-primary font-medium">{cost}</span>
+            Cost -{" "}
+            <span className="text-primary font-medium">{cost || ""}</span>
           </p>
           <p className="text-xs text-amber-100 font-semibold mt-1">
             Elapsed Time -{" "}

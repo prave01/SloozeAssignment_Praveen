@@ -1,12 +1,6 @@
 import { cn } from "@/lib/utils";
-import { CreateItemType } from "@/server/zod-schema";
-import { HTMLInputTypeAttribute, useEffect } from "react";
-import {
-  type Control,
-  Controller,
-  useFormState,
-  UseFormRegister,
-} from "react-hook-form";
+import { HTMLInputTypeAttribute } from "react";
+import { UseFormRegister } from "react-hook-form";
 
 export function CustomInput({
   name,
@@ -19,7 +13,6 @@ export function CustomInput({
 }: {
   name: any;
   label: string;
-  control: Control<CreateItemType>;
   placeholder: string;
   register: UseFormRegister<any>;
   isMandatory: boolean;
@@ -51,6 +44,7 @@ export function CustomInput({
           id={name}
           type={type}
           disabled={name === "cost" && location === undefined && true}
+          required={isMandatory}
           placeholder={placeholder}
           {...register(name, { required: isMandatory })}
           className={cn(`rounded-none placeholder:text-xs text-sm w-full

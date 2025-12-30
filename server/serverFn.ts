@@ -126,7 +126,7 @@ export const CreateItem = async (data: CreateItemType) => {
   const { name, location, cost, elapsedTime, image } = parsed.data;
 
   const imageUrl =
-    typeof image === "string" && image.trim().length > 0 ? image : undefined;
+    typeof image === "string" && image.trim().length > 0 ? image : "";
 
   try {
     // Inserting value to the item table since the menu is already created
