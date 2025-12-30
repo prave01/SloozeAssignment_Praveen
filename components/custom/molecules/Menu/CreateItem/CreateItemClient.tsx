@@ -12,11 +12,14 @@ import { type CreateItemType, ItemBaseSchema } from "@/server/zod-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateItem, uploadImage } from "@/server/serverFn";
 import { Spinner } from "@/components/ui/spinner";
-import { SelectLocationClient } from "../../SelectLocationClient";
 import { SelectDuration } from "../../SelectDuration";
 import { useItem } from "@/client/store";
 
-export function CreateItemClient() {
+export function CreateItemClient({
+  restaurant,
+}: {
+  restaurant: "america" | "india";
+}) {
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -27,17 +30,19 @@ export function CreateItemClient() {
     handleSubmit,
     control,
     formState: { isValid, errors },
-    watch,
     register,
+    setValue,
   } = useForm({
     resolver: zodResolver(ItemBaseSchema),
   });
 
   useEffect(() => {
+    setValue("location", restaurant);
+  }, [restaurant]);
+
+  useEffect(() => {
     console.log(errors);
   }, [errors]);
-
-  const location = watch("location");
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith("image/")) {
@@ -62,7 +67,6 @@ export function CreateItemClient() {
       if (image) {
         res = await uploadImage(image);
       }
-
       const createdItem = await CreateItem({
         name: data.name,
         elapsedTime: data.elapsedTime,
@@ -106,10 +110,17 @@ export function CreateItemClient() {
       <CardContent
         className="w-full h-full border flex items-center justify-center
           border-myborder transition-all px-5 py-8 duration-200
-          group-focus-within:border-blue-500/40"
+          group-focus-within:border-blue-500/40 relative"
       >
         <form onSubmit={handleSubmit(onSubmit)}>
           {" "}
+          <span
+            className="italic absolute top-5 right-5 text-neutral-500 text-xs
+              text-right pt-0"
+          >
+            select appropriate location for right <br />
+            currency (America - $ / India - ₹)
+          </span>
           <div className="flex gap-4 flex-col h-full w-[90%] mx-auto">
             <CustomInput
               label="Item name"
@@ -120,27 +131,12 @@ export function CreateItemClient() {
               isMandatory={true}
             />
 
-            <Controller
-              name="location"
-              control={control}
-              render={({ field }) => (
-                <div className="flex flex-row items-center justify-between">
-                  {" "}
-                  <SelectLocationClient onChange={field.onChange} />
-                  <span className="italic text-neutral-500 text-xs text-right pt-5">
-                    select appropriate location for right <br />
-                    currency (America - $ / India - ₹)
-                  </span>
-                </div>
-              )}
-            />
-
             <div className="flex gap-2">
               {" "}
               <CustomInput
                 name="cost"
                 label="Cost"
-                location={location}
+                location={restaurant}
                 register={register}
                 placeholder="eg. 10 ($/₹)"
                 type="number"

@@ -16,7 +16,7 @@ export function CustomInput({
   placeholder: string;
   register: UseFormRegister<any>;
   isMandatory: boolean;
-  location?: "america" | "india";
+  location?: string;
   type: HTMLInputTypeAttribute;
 }) {
   const currencyType = location === "america" ? "$" : "₹";
@@ -26,7 +26,7 @@ export function CustomInput({
       <label htmlFor={name}>
         {label}
         {isMandatory && (
-          <span className="text-sm font-medium text-red-500/50">*</span>
+          <span className="text-sm font-medium text-red-500/50"> *</span>
         )}
       </label>
 
@@ -46,7 +46,10 @@ export function CustomInput({
           disabled={name === "cost" && location === undefined && true}
           required={isMandatory}
           placeholder={placeholder}
-          {...register(name, { required: isMandatory })}
+          {...register(name, {
+            required: isMandatory,
+            valueAsNumber: name === "cost",
+          })}
           className={cn(`rounded-none placeholder:text-xs text-sm w-full
             placeholder:pl-1 placeholder:italic focus:outline-none
             focus:bg-zinc-500/20 border border-myborder px-2 py-2`)}

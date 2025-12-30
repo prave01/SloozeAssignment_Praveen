@@ -33,7 +33,7 @@ export const SelectLocationClient = ({
         <SelectContent>
           <SelectGroup>
             {" "}
-            <SelectLabel>locations</SelectLabel>
+            <SelectLabel>Locations</SelectLabel>
             <SelectItem value="america">America</SelectItem>
             <SelectItem value="india">India</SelectItem>
           </SelectGroup>

@@ -237,9 +237,11 @@ export const CreateUser = async (data: CreateUserServerType) => {
   }
 };
 
-export const GetItems = async () => {
+export const GetItems = async (restaurant: "america" | "india") => {
   try {
-    const Items = await db.query.item.findMany();
+    const Items = await db.query.item.findMany({
+      where: eq(item.location, restaurant),
+    });
     console.log(Items);
     return Items;
   } catch (err: any) {
