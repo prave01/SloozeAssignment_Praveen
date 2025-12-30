@@ -95,7 +95,7 @@ export function CreateItemClient() {
   };
 
   return (
-    <div className="group w-1/3 h-full flex flex-col gap-2 focus:outline-none">
+    <div className="group w-1/3 h-auto flex flex-col gap-2 focus:outline-none">
       <CardTitle
         className="border border-myborder py-1 px-3 text-lg transition-all
           duration-200 group-focus-within:border-blue-500/40"

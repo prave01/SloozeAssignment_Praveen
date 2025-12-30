@@ -17,7 +17,10 @@ export function ShowAvailableItems() {
   }, []);
 
   return (
-    <div className="group w-1/3 h-full flex flex-col gap-2 focus:outline-none">
+    <div
+      className="group overflow-clip h-auto w-1/3 flex flex-col gap-2
+        focus:outline-none"
+    >
       <CardTitle
         className="border border-myborder py-1 px-3 text-lg transition-all
           duration-200 group-focus-within:border-blue-500/40"
@@ -25,12 +28,13 @@ export function ShowAvailableItems() {
         Available Items
       </CardTitle>
 
-      <CardContent
-        className="flex-1 w-full border p-3 border-myborder transition-all
-          duration-200 group-focus-within:border-blue-500/40 overflow-y-auto
-          overflow-x-hidden relative overscroll-none"
+      <div
+        className="w-full border p-3 border-myborder transition-all duration-200
+          group-focus-within:border-blue-500/40 h-full overflow-x-hidden gap-2
+          no-scrollbar"
       >
-        <div className="grid absolute z-30 grid-cols-2 w-full gap-2">
+        <div className="grid grid-cols-2 flex-wrap gap-2 h-100 pb-2">
+          {" "}
           {items.map((item, idx) => (
             <CustomSelectCard
               key={idx}
@@ -42,7 +46,7 @@ export function ShowAvailableItems() {
             />
           ))}
         </div>
-      </CardContent>
+      </div>
     </div>
   );
 }
