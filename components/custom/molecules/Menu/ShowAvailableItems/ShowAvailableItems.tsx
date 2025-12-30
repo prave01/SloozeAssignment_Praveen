@@ -13,6 +13,7 @@ export function ShowAvailableItems({
   const items = useItem((s) => s.itemsState);
   const setItems = useItem((s) => s.setItems);
   const [loading, setLoading] = useState(false);
+  const [selectedCards, setSelectedCards] = useState<Record<string, string>>();
 
   useEffect(() => {
     const Items = async () => {
@@ -23,6 +24,10 @@ export function ShowAvailableItems({
     };
     Items();
   }, [restaurant]);
+
+  useEffect(() => {
+    console.log("selectedCards", selectedCards);
+  }, [selectedCards]);
 
   return (
     <div
@@ -56,7 +61,7 @@ export function ShowAvailableItems({
           {items.map((item, idx) => (
             <CustomSelectCard
               key={idx}
-              selectedCards={[]}
+              setSelectedCards={setSelectedCards}
               itemName={item.name}
               cost={item.cost}
               elapsedTime={item.elapsedTime}
