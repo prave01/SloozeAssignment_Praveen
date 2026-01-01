@@ -1,2 +1,1 @@
-1. Select Item in the MenuItem component need to develop
-2. Need to check the duplication of item based on location and name
+1. Need to work on the debouncing logic in the ShowAvailableItems.tsx

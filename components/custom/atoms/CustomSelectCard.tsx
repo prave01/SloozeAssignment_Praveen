@@ -33,7 +33,7 @@ export function CustomSelectCard({
       className={cn(
         `rounded-md gap-2 flex flex-row p-2 items-start w-full h-fit
         border-myborder cursor-pointer`,
-        selectedItemIds.has(id as string) && "border-green-500 border",
+        selectedItemIds.has(id as string) && "border-green-400/50 border",
       )}
     >
       <div className="flex-1 flex flex-col gap-1 h-full rounded-sm">

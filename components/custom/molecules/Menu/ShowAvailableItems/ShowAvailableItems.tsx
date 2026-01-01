@@ -1,10 +1,12 @@
 import { useItem, useSelectItems } from "@/client/store";
+import { CustomInput } from "@/components/custom/atoms/CustomInput";
 import { CustomSelectCard } from "@/components/custom/atoms/CustomSelectCard";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { AddItemsByMenu, GetItems, GetMenuItems } from "@/server/serverFn";
 import { useEffect, useState } from "react";
+import { RegisterOptions, UseFormRegisterReturn } from "react-hook-form";
 import { toast } from "sonner";
 
 export function ShowAvailableItems({
@@ -23,6 +25,8 @@ export function ShowAvailableItems({
 
   const [loading, setLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
+
+  const [searchInput, setSearchInput] = useState("");
 
   const handleAddItems = async () => {
     try {
@@ -46,7 +50,6 @@ export function ShowAvailableItems({
 
   useEffect(() => {
     if (!menuId) return;
-
     (async () => {
       setLoading(true);
       try {
@@ -105,6 +108,21 @@ export function ShowAvailableItems({
             {addLoading ? <Spinner className="size-5" /> : "Add Items"}
           </Button>
         </div>
+
+        <div className="w-full">
+          <input
+            value={searchInput}
+            placeholder="Find Items by Name"
+            onChange={(e) => {
+              e.preventDefault();
+              setSearchInput(e.target.value);
+            }}
+            className={`rounded-none placeholder:text-xs text-sm w-full
+              placeholder:pl-1 placeholder:italic focus:outline-none
+              focus:bg-zinc-500/20 border border-myborder px-2 py-2`}
+          />
+        </div>
+
         <div className="grid grid-cols-2 flex-wrap gap-2 h-50 pb-2">
           {" "}
           {items.map((item) => (
