@@ -58,12 +58,13 @@ export function ShowAvailableItems({
         )}
         <div className="grid grid-cols-2 flex-wrap gap-2 h-50 pb-2">
           {" "}
-          {items.map((item, idx) => (
+          {items.map((item) => (
             <CustomSelectCard
-              key={idx}
-              setSelectedCards={setSelectedCards}
-              itemName={item.name}
+              key={item.id}
+              name={item.name}
               cost={item.cost}
+              location={item.location}
+              id={item.id}
               elapsedTime={item.elapsedTime}
               image={item.image ?? undefined}
             />

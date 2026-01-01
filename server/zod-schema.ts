@@ -30,6 +30,7 @@ export const ItemBaseSchema = z.object({
   elapsedTime: z.string(),
   image: z.string().optional(),
   location: z.enum(["america", "india"]),
+  id: z.string().optional(),
 });
 
 export type CreateItemType = z.infer<typeof ItemBaseSchema>;
