@@ -11,10 +11,25 @@ import {
   SelectItem,
   SelectLabel,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getMenuId } from "@/server/serverFn";
 
 export function MenuItemsPage() {
   const [location, setLocation] = useState<"america" | "india">("india");
+  const [menuId, setMenuId] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      const id = await getMenuId(location);
+      setMenuId(id as string);
+      console.log("I have changed", id);
+    })();
+  }, [location]);
+
+  const handleValueChange = async (value: any) => {
+    setLocation(value as "india" | "america");
+  };
+
   return (
     <div className="w-full h-full p-20">
       <Card
@@ -26,11 +41,7 @@ export function MenuItemsPage() {
             py-2 px-3 text-xl"
         >
           Add Menu Items
-          <Select
-            required
-            value={location}
-            onValueChange={(value) => setLocation(value as "india" | "america")}
-          >
+          <Select required value={location} onValueChange={handleValueChange}>
             <SelectTrigger
               className="w-45 p-2 border border-myborder rounded-none
                 justify-start"
@@ -52,7 +63,7 @@ export function MenuItemsPage() {
           border"
         >
           <CreateItemClient restaurant={location} />
-          <ShowAvailableItems restaurant={location} />
+          <ShowAvailableItems menuId={menuId} restaurant={location} />
           <AddMenuItems />
         </CardContent>
       </Card>

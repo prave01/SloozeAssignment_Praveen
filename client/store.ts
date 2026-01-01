@@ -1,5 +1,4 @@
 import { CreateItemType } from "@/server/zod-schema";
-import { set } from "zod";
 import { create } from "zustand";
 
 type ItemObjectStore = {
@@ -13,28 +12,26 @@ export const useItem = create<ItemObjectStore>((set) => ({
 }));
 
 type SelectItemsStore = {
-  selectedItemIds: Set<string>;
-  addItem: (id: string) => void;
-  removeItem: (id: string) => void;
+  selectedItemIds: Map<string, string>;
+  addItem: (itemId: string, menuId: string) => void;
+  removeItem: (itemId: string) => void;
   clear: () => void;
 };
 
 export const useSelectItems = create<SelectItemsStore>((set) => ({
-  selectedItemIds: new Set(),
-
-  addItem: (id) =>
+  selectedItemIds: new Map(),
+  addItem: (itemId, menuId) =>
     set((state) => {
-      const next = new Set(state.selectedItemIds);
-      next.add(id);
+      const next = new Map(state.selectedItemIds);
+      next.set(itemId, menuId);
+      console.log(next);
       return { selectedItemIds: next };
     }),
-
-  removeItem: (id) =>
+  removeItem: (itemId) =>
     set((state) => {
-      const next = new Set(state.selectedItemIds);
-      next.delete(id);
+      const next = new Map(state.selectedItemIds);
+      next.delete(itemId);
       return { selectedItemIds: next };
     }),
-
-  clear: () => set({ selectedItemIds: new Set() }),
+  clear: () => set({ selectedItemIds: new Map() }),
 }));

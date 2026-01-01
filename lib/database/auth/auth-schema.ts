@@ -30,7 +30,6 @@ export const userProfile = pgTable("user_profile", {
   userId: text("user_id")
     .primaryKey()
     .references(() => user.id, { onDelete: "cascade" }),
-
   role: rolesEnum().notNull(),
   location: locationEnum().notNull(),
   restaurantID: text("restaurant_id").references(() => restaurant.id),

@@ -89,30 +89,28 @@ export const CreateUserClient = () => {
           className="w-full h-auto flex flex-col gap-2"
         >
           <CustomInput
-            name={"Name"}
-            label={"name"}
-            control={control}
+            name={"name"}
+            label={"Name"}
             placeholder={"eg. Tony-Stark"}
             register={register}
             isMandatory={true}
             type="text"
           />
+
           <CustomInput
-            name="Email"
+            name="email"
             type="email"
-            control={control}
             isMandatory={true}
-            label="email"
+            label="Email"
             placeholder="eg. example@email.com"
             register={register}
           />
 
           <div className="relative flex gap-2 flex-col">
             <CustomInput
-              name="Create Password"
-              control={control}
+              name="password"
               isMandatory={true}
-              label="password"
+              label="Create Password"
               type={showPassword ? "text" : "password"}
               register={register}
               placeholder="*****"

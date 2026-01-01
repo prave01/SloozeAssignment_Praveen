@@ -3,6 +3,7 @@
 import {
   item,
   menu,
+  menuItem,
   restaurant,
   userProfile,
   type RestaurantType,
@@ -87,6 +88,21 @@ export const createMenu = async ({ location }: CreateMenu) => {
       .returning();
 
     return createdMenu;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const getMenuId = async (location: "america" | "india") => {
+  try {
+    const result = await db.query.restaurant.findFirst({
+      with: {
+        menu: true,
+      },
+      where: eq(restaurant.location, location),
+    });
+
+    return result?.menu?.id;
   } catch (err: any) {
     throw err;
   }
@@ -244,6 +260,27 @@ export const GetItems = async (restaurant: "america" | "india") => {
     });
     console.log(Items);
     return Items;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const AddItemsByMenu = async (items: Map<string, string>) => {
+  try {
+    if (items.size < 1) {
+      throw new Error("Not enough items to insert");
+    }
+
+    // Converts map to array of insertable rows
+    const values = Array.from(items.entries()).map(([itemId, menuId]) => ({
+      itemId,
+      menuId,
+    }));
+
+    // Get item by ID
+    const AddedItems = await db.insert(menuItem).values(values).returning();
+
+    return AddedItems;
   } catch (err: any) {
     throw err;
   }

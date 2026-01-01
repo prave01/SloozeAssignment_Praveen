@@ -13,14 +13,15 @@ export function CustomSelectCard({
   image,
   location,
   id,
-}: CreateItemType) {
+  menuId,
+}: CreateItemType & { menuId: string }) {
   const selectedItemIds = useSelectItems((s) => s.selectedItemIds);
   const addItem = useSelectItems((s) => s.addItem);
   const removeItem = useSelectItems((s) => s.removeItem);
 
   const handleSelect = () => {
     if (!selectedItemIds.has(id as string)) {
-      addItem(id as string);
+      addItem(id as string, menuId);
       return;
     }
     removeItem(id as string);
@@ -31,7 +32,7 @@ export function CustomSelectCard({
       onClick={handleSelect}
       className={cn(
         `rounded-md gap-2 flex flex-row p-2 items-start w-full h-fit
-        border-myborder`,
+        border-myborder cursor-pointer`,
         selectedItemIds.has(id as string) && "border-green-500 border",
       )}
     >

@@ -1,19 +1,24 @@
-import { useItem } from "@/client/store";
+import { useItem, useSelectItems } from "@/client/store";
 import { CustomSelectCard } from "@/components/custom/atoms/CustomSelectCard";
-import { CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
-import { GetItems } from "@/server/serverFn";
+import { AddItemsByMenu, GetItems } from "@/server/serverFn";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export function ShowAvailableItems({
   restaurant,
+  menuId,
 }: {
   restaurant: "america" | "india";
+  menuId?: string;
 }) {
   const items = useItem((s) => s.itemsState);
   const setItems = useItem((s) => s.setItems);
+  const selectedCards = useSelectItems((s) => s.selectedItemIds);
   const [loading, setLoading] = useState(false);
-  const [selectedCards, setSelectedCards] = useState<Record<string, string>>();
+  const [addLoading, setAddLoading] = useState(false);
 
   useEffect(() => {
     const Items = async () => {
@@ -25,9 +30,22 @@ export function ShowAvailableItems({
     Items();
   }, [restaurant]);
 
-  useEffect(() => {
-    console.log("selectedCards", selectedCards);
-  }, [selectedCards]);
+  const handleAddItems = async () => {
+    try {
+      if (selectedCards.size < 1) {
+        toast.error("Please selelct atleast one to proceed");
+        return;
+      }
+      setAddLoading(true);
+      const result = await AddItemsByMenu(selectedCards);
+      console.log(result);
+      toast.success("Items inserted successfully");
+    } catch (err: any) {
+      toast.error("Somthing went wrong", { description: `${err}` });
+    } finally {
+      setAddLoading(false);
+    }
+  };
 
   return (
     <div
@@ -42,9 +60,9 @@ export function ShowAvailableItems({
       </CardTitle>
 
       <div
-        className="w-full border p-3 border-myborder transition-all duration-200
-          group-focus-within:border-blue-500/40 h-full overflow-x-hidden gap-2
-          no-scrollbar relative"
+        className="w-full bg-transparent border p-3 border-myborder
+          transition-all duration-200 group-focus-within:border-blue-500/40
+          h-full overflow-x-hidden gap-3 no-scrollbar relative flex flex-col"
       >
         {loading && (
           <div
@@ -56,19 +74,32 @@ export function ShowAvailableItems({
             <span className="text-neutral-500 text-md">Fetching Items</span>
           </div>
         )}
+        <div className="w-full flex h-auto items-center justify-between">
+          {" "}
+          <div className="text-neutral-500 text-sm">
+            Selected Items -
+            <span className="text-primary"> {selectedCards.size}</span>
+          </div>
+          <Button onClick={handleAddItems}>
+            {addLoading ? <Spinner className="size-5" /> : "Add Items"}
+          </Button>
+        </div>
         <div className="grid grid-cols-2 flex-wrap gap-2 h-50 pb-2">
           {" "}
-          {items.map((item) => (
-            <CustomSelectCard
-              key={item.id}
-              name={item.name}
-              cost={item.cost}
-              location={item.location}
-              id={item.id}
-              elapsedTime={item.elapsedTime}
-              image={item.image ?? undefined}
-            />
-          ))}
+          {items
+            .filter((item) => !selectedCards.has(item.id as string))
+            .map((item) => (
+              <CustomSelectCard
+                key={item.id}
+                name={item.name}
+                cost={item.cost}
+                menuId={menuId as string}
+                location={item.location}
+                id={item.id}
+                elapsedTime={item.elapsedTime}
+                image={item.image ?? undefined}
+              />
+            ))}
         </div>
       </div>
     </div>
