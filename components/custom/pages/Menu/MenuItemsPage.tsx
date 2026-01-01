@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { getMenuId } from "@/server/serverFn";
 
 export function MenuItemsPage() {
-  const [location, setLocation] = useState<"america" | "india">("india");
+  const [location, setLocation] = useState<"america" | "india">("america");
   const [menuId, setMenuId] = useState("");
 
   useEffect(() => {

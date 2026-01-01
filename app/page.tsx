@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 export default function Home() {
   useEffect(() => {
-    const result = createRestaurant({ location: "india", name: "PiedPiper" });
+    const result = createRestaurant({ location: "america", name: "English" });
     console.log(result);
   }, []);
 

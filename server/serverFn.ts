@@ -258,7 +258,6 @@ export const GetItems = async (restaurant: "america" | "india") => {
     const Items = await db.query.item.findMany({
       where: eq(item.location, restaurant),
     });
-    console.log(Items);
     return Items;
   } catch (err: any) {
     throw err;
@@ -278,9 +277,21 @@ export const AddItemsByMenu = async (items: Map<string, string>) => {
     }));
 
     // Get item by ID
-    const AddedItems = await db.insert(menuItem).values(values).returning();
+    const [addedItem] = await db.insert(menuItem).values(values).returning();
 
-    return AddedItems;
+    return addedItem;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const GetMenuItems = async (menuId: string) => {
+  try {
+    const MenuItems = await db.query.menuItem.findMany({
+      where: eq(menuItem.menuId, menuId),
+    });
+
+    return MenuItems;
   } catch (err: any) {
     throw err;
   }

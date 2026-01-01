@@ -4,11 +4,16 @@ import { create } from "zustand";
 type ItemObjectStore = {
   itemsState: Array<CreateItemType>;
   setItems: (buffer: Array<CreateItemType>) => void;
+  removeItem: (itemId: string) => void;
 };
 
 export const useItem = create<ItemObjectStore>((set) => ({
   itemsState: [],
   setItems: (buffer) => set({ itemsState: buffer }),
+  removeItem: (itemId) =>
+    set((state) => ({
+      itemsState: state.itemsState.filter((item) => item.id !== itemId),
+    })),
 }));
 
 type SelectItemsStore = {
@@ -24,7 +29,6 @@ export const useSelectItems = create<SelectItemsStore>((set) => ({
     set((state) => {
       const next = new Map(state.selectedItemIds);
       next.set(itemId, menuId);
-      console.log(next);
       return { selectedItemIds: next };
     }),
   removeItem: (itemId) =>

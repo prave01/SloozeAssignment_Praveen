@@ -64,9 +64,7 @@ export function CustomSelectCard({
         </div>
       </div>
       <Avatar className="size-20 rounded-sm">
-        {image && (
-          <AvatarImage src={image} loading="eager" className="rounded-sm" />
-        )}
+        {image && <AvatarImage src={image} className="rounded-sm" />}
         <AvatarFallback className="rounded-sm">
           <p className="text-4xl font-semibold">
             {name?.split("")[0].toUpperCase()}

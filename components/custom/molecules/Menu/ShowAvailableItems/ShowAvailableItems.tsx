@@ -3,7 +3,7 @@ import { CustomSelectCard } from "@/components/custom/atoms/CustomSelectCard";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
-import { AddItemsByMenu, GetItems } from "@/server/serverFn";
+import { AddItemsByMenu, GetItems, GetMenuItems } from "@/server/serverFn";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -16,19 +16,13 @@ export function ShowAvailableItems({
 }) {
   const items = useItem((s) => s.itemsState);
   const setItems = useItem((s) => s.setItems);
+  const removeItem = useItem((s) => s.removeItem);
+
   const selectedCards = useSelectItems((s) => s.selectedItemIds);
+  const removeCard = useSelectItems((s) => s.removeItem);
+
   const [loading, setLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
-
-  useEffect(() => {
-    const Items = async () => {
-      setLoading(true);
-      const res = await GetItems(restaurant);
-      setItems([...res]);
-      setLoading(false);
-    };
-    Items();
-  }, [restaurant]);
 
   const handleAddItems = async () => {
     try {
@@ -37,8 +31,11 @@ export function ShowAvailableItems({
         return;
       }
       setAddLoading(true);
-      const result = await AddItemsByMenu(selectedCards);
-      console.log(result);
+      const addedItem = await AddItemsByMenu(selectedCards);
+
+      removeItem(addedItem.itemId);
+      removeCard(addedItem.itemId);
+
       toast.success("Items inserted successfully");
     } catch (err: any) {
       toast.error("Somthing went wrong", { description: `${err}` });
@@ -46,6 +43,30 @@ export function ShowAvailableItems({
       setAddLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!menuId) return;
+
+    (async () => {
+      setLoading(true);
+      try {
+        const [allItems, menuItems] = await Promise.all([
+          GetItems(restaurant),
+          GetMenuItems(menuId),
+        ]);
+
+        const menuItemIds = new Set(menuItems.map((item) => item.itemId));
+
+        const availableItems = allItems.filter(
+          (item) => !menuItemIds.has(item.id),
+        );
+
+        setItems(availableItems);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [menuId]);
 
   return (
     <div
@@ -86,20 +107,18 @@ export function ShowAvailableItems({
         </div>
         <div className="grid grid-cols-2 flex-wrap gap-2 h-50 pb-2">
           {" "}
-          {items
-            .filter((item) => !selectedCards.has(item.id as string))
-            .map((item) => (
-              <CustomSelectCard
-                key={item.id}
-                name={item.name}
-                cost={item.cost}
-                menuId={menuId as string}
-                location={item.location}
-                id={item.id}
-                elapsedTime={item.elapsedTime}
-                image={item.image ?? undefined}
-              />
-            ))}
+          {items.map((item) => (
+            <CustomSelectCard
+              key={item.id as string}
+              name={item.name}
+              cost={item.cost}
+              menuId={menuId as string}
+              location={item.location}
+              id={item.id}
+              elapsedTime={item.elapsedTime}
+              image={item.image ?? undefined}
+            />
+          ))}
         </div>
       </div>
     </div>
