@@ -156,7 +156,7 @@ export function CreateItemClient({
 
             <div className="flex flex-col gap-2">
               {" "}
-              <label>Item Image</label>
+              <label className="text-sm">Item Image</label>
               <div
                 className="relative flex flex-col items-center justify-center
                   border bg-zinc-500/10 border-dashed border-myborder h-36

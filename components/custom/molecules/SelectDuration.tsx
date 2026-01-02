@@ -19,7 +19,7 @@ export const SelectDuration = ({
 }) => {
   return (
     <div className="gap-2 flex flex-col">
-      <label>
+      <label className="text-sm">
         Duration <span className="text-sm font-medium text-red-500/50">*</span>
       </label>
 

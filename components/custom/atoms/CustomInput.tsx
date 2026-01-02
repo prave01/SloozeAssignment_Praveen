@@ -23,10 +23,10 @@ export function CustomInput({
 
   return (
     <div className="flex flex-col gap-2">
-      <label htmlFor={name}>
+      <label htmlFor={name} className="text-sm">
         {label}
         {isMandatory && (
-          <span className="text-sm font-medium text-red-500/50"> *</span>
+          <span className="text-xs font-medium text-red-500/50"> *</span>
         )}
       </label>
 

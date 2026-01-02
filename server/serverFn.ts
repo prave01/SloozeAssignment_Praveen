@@ -277,9 +277,12 @@ export const AddItemsByMenu = async (items: Map<string, string>) => {
     }));
 
     // Get item by ID
-    const [addedItem] = await db.insert(menuItem).values(values).returning();
+    const addedItems = await db
+      .insert(menuItem)
+      .values(values)
+      .returning({ itemId: menuItem.itemId });
 
-    return addedItem;
+    return addedItems;
   } catch (err: any) {
     throw err;
   }

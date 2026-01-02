@@ -6,7 +6,6 @@ import { CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { AddItemsByMenu, GetItems, GetMenuItems } from "@/server/serverFn";
 import { useEffect, useState } from "react";
-import { RegisterOptions, UseFormRegisterReturn } from "react-hook-form";
 import { toast } from "sonner";
 
 export function ShowAvailableItems({
@@ -18,7 +17,7 @@ export function ShowAvailableItems({
 }) {
   const items = useItem((s) => s.itemsState);
   const setItems = useItem((s) => s.setItems);
-  const removeItem = useItem((s) => s.removeItem);
+  const removeItem = useItem((s) => s.removeItems);
 
   const selectedCards = useSelectItems((s) => s.selectedItemIds);
   const removeCard = useSelectItems((s) => s.removeItem);
@@ -37,8 +36,8 @@ export function ShowAvailableItems({
       setAddLoading(true);
       const addedItem = await AddItemsByMenu(selectedCards);
 
-      removeItem(addedItem.itemId);
-      removeCard(addedItem.itemId);
+      removeItem(addedItem);
+      removeCard(addedItem);
 
       toast.success("Items inserted successfully");
     } catch (err: any) {
