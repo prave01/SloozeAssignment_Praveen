@@ -12,7 +12,7 @@ import { Trash2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export function AddMenuItems({ menuId }: { menuId: string }) {
+export function MenuItems({ menuId }: { menuId: string }) {
   const [loading, setLoading] = useState(false);
 
   const menuItems = useMenuItems((s) => s.menuItems);

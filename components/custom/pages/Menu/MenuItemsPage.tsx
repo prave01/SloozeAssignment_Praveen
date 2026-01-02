@@ -1,7 +1,6 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { CreateItemClient } from "../../molecules/Menu/CreateItem/CreateItemClient";
 import { ShowAvailableItems } from "../../molecules/Menu/ShowAvailableItems/ShowAvailableItems";
-import { AddMenuItems } from "../../molecules/Menu/AddMenuItems/AddMenuItems";
 import {
   SelectTrigger,
   SelectValue,
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
 import { getMenuId } from "@/server/serverFn";
+import { MenuItems } from "../../molecules/Menu/MenuItems/MenuItems";
 
 export function MenuItemsPage() {
   const [location, setLocation] = useState<"america" | "india">("america");
@@ -64,7 +64,7 @@ export function MenuItemsPage() {
         >
           <CreateItemClient restaurant={location} />
           <ShowAvailableItems menuId={menuId} restaurant={location} />
-          <AddMenuItems menuId={menuId} />
+          <MenuItems menuId={menuId} />
         </CardContent>
       </Card>
     </div>
