@@ -1,7 +1,12 @@
 "use client";
 
 import { CreateItemType } from "@/server/zod-schema";
-import { IconUserPlus, IconHome, IconSquarePlus } from "@tabler/icons-react";
+import {
+  IconUserPlus,
+  IconHome,
+  IconSquarePlus,
+  IconMenuOrder,
+} from "@tabler/icons-react";
 import { ComponentType } from "react";
 
 interface NavLinks {
@@ -25,6 +30,11 @@ export const Links: NavLinks[] = [
     href: "/dashboard/menu",
     label: "Add Menu Items",
     icon: IconSquarePlus,
+  },
+  {
+    href: "/dashboard/order",
+    label: "Orders",
+    icon: IconMenuOrder,
   },
 ];
 

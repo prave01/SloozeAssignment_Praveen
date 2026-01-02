@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { CreateItemType } from "@/server/zod-schema";
+import { ClassNameValue } from "tailwind-merge";
 
 export function CustomSelectCard({
   name,
@@ -14,7 +15,8 @@ export function CustomSelectCard({
   location,
   id,
   menuId,
-}: CreateItemType & { menuId: string }) {
+  className,
+}: CreateItemType & { menuId: string; className?: ClassNameValue }) {
   const selectedItemIds = useSelectItems((s) => s.selectedItemIds);
   const addItem = useSelectItems((s) => s.addItem);
   const removeItem = useSelectItems((s) => s.removeItem);
@@ -34,6 +36,7 @@ export function CustomSelectCard({
         `rounded-md gap-2 flex flex-row p-2 items-start w-full h-fit
         border-myborder cursor-pointer`,
         selectedItemIds.has(id as string) && "border-green-400/50 border",
+        className,
       )}
     >
       <div className="flex-1 flex flex-col gap-1 h-full rounded-sm">
