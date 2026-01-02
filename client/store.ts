@@ -1,4 +1,3 @@
-import { item } from "@/lib/database";
 import { CreateItemType } from "@/server/zod-schema";
 import { create } from "zustand";
 
@@ -51,4 +50,27 @@ export const useSelectItems = create<SelectItemsStore>((set) => ({
     }),
 
   clear: () => set({ selectedItemIds: new Map() }),
+}));
+
+type MenuItemWithItem = {
+  menuId: string;
+  itemId: string;
+  item: {
+    id: string;
+    name: string;
+    cost: number;
+    location: "america" | "india";
+    elapsedTime: string;
+    image?: string;
+  };
+};
+
+type MenuItems = {
+  menuItems: Array<MenuItemWithItem>;
+  setMenuItems: (buffer: Array<MenuItemWithItem>) => void;
+};
+
+export const useMenuItems = create<MenuItems>((set) => ({
+  menuItems: [],
+  setMenuItems: (buffer) => set({ menuItems: buffer }),
 }));

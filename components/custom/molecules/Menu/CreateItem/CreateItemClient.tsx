@@ -67,15 +67,17 @@ export function CreateItemClient({
       if (image) {
         res = await uploadImage(image);
       }
-      const createdItem = await CreateItem({
-        name: data.name,
-        elapsedTime: data.elapsedTime,
-        cost: data.cost,
-        image: res?.url || "",
-        location: data.location,
-      });
+      const createdItem = await CreateItem([
+        {
+          name: data.name,
+          elapsedTime: data.elapsedTime,
+          cost: data.cost,
+          image: res?.url || "",
+          location: data.location,
+        },
+      ]);
 
-      if (createdItem.id) {
+      if (createdItem[0].id) {
         // refreshing the available items
         setItems([
           ...items,
@@ -89,10 +91,9 @@ export function CreateItemClient({
         ]);
       }
 
-      toast.success(`Item ${createdItem.name} Created Successfully`);
+      toast.success(`Item ${createdItem[0].name} Created Successfully`);
     } catch (err: any) {
-      console.error(err);
-      toast.error("Creating Item Failed", { description: err });
+      toast.error("Creating Item Failed", { description: String(err) });
     } finally {
       setLoading(false);
     }

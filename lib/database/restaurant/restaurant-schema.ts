@@ -54,11 +54,11 @@ export const menuRelations = relations(menu, ({ one, many }) => ({
     fields: [menu.restaurantId],
     references: [restaurant.id],
   }),
-  items: many(item),
+  menuItems: many(menuItem),
 }));
 
 export const itemRelations = relations(item, ({ many }) => ({
-  menu: many(menu),
+  menuItems: many(menuItem),
 }));
 
 export type RestaurantType = typeof restaurant.$inferInsert;

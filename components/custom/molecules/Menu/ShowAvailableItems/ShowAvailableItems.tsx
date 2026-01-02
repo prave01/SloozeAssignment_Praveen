@@ -1,10 +1,15 @@
-import { useItem, useSelectItems } from "@/client/store";
-import { CustomInput } from "@/components/custom/atoms/CustomInput";
+import { useDebounce } from "@/client/hooks";
+import { useItem, useMenuItems, useSelectItems } from "@/client/store";
 import { CustomSelectCard } from "@/components/custom/atoms/CustomSelectCard";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
-import { AddItemsByMenu, GetItems, GetMenuItems } from "@/server/serverFn";
+import {
+  AddItemsByMenu,
+  GetItemsByQuery,
+  GetMenuItems,
+} from "@/server/serverFn";
+import { RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -21,11 +26,19 @@ export function ShowAvailableItems({
 
   const selectedCards = useSelectItems((s) => s.selectedItemIds);
   const removeCard = useSelectItems((s) => s.removeItem);
+  const clear = useSelectItems((s) => s.clear);
 
   const [loading, setLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
 
   const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput, 400);
+
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleRefresh = () => {
+    setRefreshKey((prevKey) => prevKey + 1);
+  };
 
   const handleAddItems = async () => {
     try {
@@ -49,11 +62,14 @@ export function ShowAvailableItems({
 
   useEffect(() => {
     if (!menuId) return;
+
     (async () => {
       setLoading(true);
       try {
+        clear();
+
         const [allItems, menuItems] = await Promise.all([
-          GetItems(restaurant),
+          GetItemsByQuery(restaurant, debouncedSearch),
           GetMenuItems(menuId),
         ]);
 
@@ -68,7 +84,7 @@ export function ShowAvailableItems({
         setLoading(false);
       }
     })();
-  }, [menuId]);
+  }, [menuId, debouncedSearch, restaurant, refreshKey]);
 
   return (
     <div
@@ -90,7 +106,7 @@ export function ShowAvailableItems({
         {loading && (
           <div
             className="absolute flex-col gap-1 w-full h-full flex items-center
-              justify-center"
+              justify-center backdrop-blur-md z-10"
           >
             {" "}
             <Spinner className="size-6" />
@@ -103,9 +119,18 @@ export function ShowAvailableItems({
             Selected Items -
             <span className="text-primary"> {selectedCards.size}</span>
           </div>
-          <Button onClick={handleAddItems}>
-            {addLoading ? <Spinner className="size-5" /> : "Add Items"}
-          </Button>
+          <div className="flex items-center justify-center gap-2">
+            {" "}
+            <Button
+              onClick={handleRefresh}
+              className="bg-transparent hover:bg-accent"
+            >
+              <RefreshCcw className="text-muted-foreground" />
+            </Button>
+            <Button onClick={handleAddItems}>
+              {addLoading ? <Spinner className="size-5" /> : "Add Items"}
+            </Button>
+          </div>
         </div>
 
         <div className="w-full">
@@ -124,9 +149,9 @@ export function ShowAvailableItems({
 
         <div className="grid grid-cols-2 flex-wrap gap-2 h-50 pb-2">
           {" "}
-          {items.map((item) => (
+          {items.map((item, index) => (
             <CustomSelectCard
-              key={item.id as string}
+              key={item.id ?? `${item.name}-${item.location}-${index}`}
               name={item.name}
               cost={item.cost}
               menuId={menuId as string}

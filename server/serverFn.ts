@@ -8,7 +8,7 @@ import {
   userProfile,
   type RestaurantType,
 } from "@/lib/database";
-import { eq } from "drizzle-orm";
+import { and, eq, ilike } from "drizzle-orm";
 import { db } from "@/lib/database/drizzle";
 import { v7 } from "uuid";
 import {
@@ -131,37 +131,56 @@ export const getRestaurant = async (
   return result;
 };
 
+export const getRestaurantById = async (restaurantId: string) => {
+  try {
+    const result = await db.query.restaurant.findFirst({
+      where: eq(restaurant.id, restaurantId),
+    });
+
+    return result;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
 // Feeding items into the menu
-export const CreateItem = async (data: CreateItemType) => {
-  const parsed = ItemBaseSchema.safeParse(data);
+export const CreateItem = async (data: CreateItemType[]) => {
+  if (data.length === 0) {
+    throw new Error("No items to create");
+  }
+
+  const parsed = ItemBaseSchema.array().safeParse(data);
 
   if (!parsed.success) {
     throw new Error(`Invalid input:\n ${parsed.error.message}`);
   }
 
-  const { name, location, cost, elapsedTime, image } = parsed.data;
+  const restaurant = await getRestaurant(parsed.data[0].location);
 
-  const imageUrl =
-    typeof image === "string" && image.trim().length > 0 ? image : "";
+  if (!restaurant) {
+    throw new Error(
+      `Restaurant at ${parsed.data[0].location} is not available`,
+    );
+  }
+
+  const values = parsed.data.map(
+    ({ name, location, cost, elapsedTime, image }) => ({
+      name,
+      location,
+      cost,
+      elapsedTime,
+      image: typeof image === "string" && image.trim().length > 0 ? image : "",
+    }),
+  );
 
   try {
-    // Inserting value to the item table since the menu is already created
-    // when creating the restaurant
-
-    const [createdItem] = await db
-      .insert(item)
-      .values({
-        name,
-        image: imageUrl,
-        cost,
-        elapsedTime,
-        location,
-      })
-      .returning();
-
-    return createdItem;
+    return await db.insert(item).values(values).returning();
   } catch (err: any) {
-    throw err;
+    if (err.code === "23505") {
+      throw new Error("ITEM_ALREADY_EXISTS");
+    }
+
+    throw new Error("DB_ERROR");
   }
 };
 
@@ -295,6 +314,54 @@ export const GetMenuItems = async (menuId: string) => {
     });
 
     return MenuItems;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const GetItemsByQuery = async (
+  location: "america" | "india",
+  query: string,
+) => {
+  try {
+    if (!query.trim()) {
+      return await db.query.item.findMany({
+        where: eq(item.location, location),
+      });
+    }
+
+    return await db.query.item.findMany({
+      where: and(eq(item.location, location), ilike(item.name, `%${query}%`)),
+    });
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const GetMenuItemsByMenuId = async (menuId: string) => {
+  try {
+    const res = await db.query.menuItem.findMany({
+      where: eq(menuItem.menuId, menuId),
+      with: {
+        item: true,
+      },
+    });
+    return res;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const DeleteMenuItemByMenuId = async (
+  menuId: string,
+  itemId: string,
+) => {
+  try {
+    const result = await db
+      .delete(menuItem)
+      .where(and(eq(menuItem.menuId, menuId), eq(menuItem.itemId, itemId)))
+      .returning();
+    return result;
   } catch (err: any) {
     throw err;
   }

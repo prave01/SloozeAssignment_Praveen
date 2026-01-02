@@ -3,13 +3,14 @@
 import { ModeToggle } from "@/components/custom/molecules/ModeToggle";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth/auth-client";
-import { createRestaurant } from "@/server/serverFn";
+import { CreateItem } from "@/server/serverFn";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { americanItems } from "@/client/constants";
 
 export default function Home() {
   useEffect(() => {
-    const result = createRestaurant({ location: "america", name: "English" });
+    const result = CreateItem(americanItems);
     console.log(result);
   }, []);
 

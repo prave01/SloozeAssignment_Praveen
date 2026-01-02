@@ -24,7 +24,7 @@ export function CustomSelectCard({
       addItem(id as string, menuId);
       return;
     }
-    removeItem(id as string);
+    removeItem([{ itemId: id as string }]);
   };
 
   return (

@@ -64,7 +64,7 @@ export function MenuItemsPage() {
         >
           <CreateItemClient restaurant={location} />
           <ShowAvailableItems menuId={menuId} restaurant={location} />
-          <AddMenuItems />
+          <AddMenuItems menuId={menuId} />
         </CardContent>
       </Card>
     </div>
