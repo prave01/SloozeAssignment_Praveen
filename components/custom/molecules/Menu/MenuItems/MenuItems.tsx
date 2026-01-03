@@ -1,6 +1,6 @@
 "use client";
 
-import { useItem, useMenuItems, useSelectItems } from "@/client/store";
+import { useItem, useMenuItems } from "@/client/store/Menu/store";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";

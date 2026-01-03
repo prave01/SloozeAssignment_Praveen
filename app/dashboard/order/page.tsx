@@ -15,10 +15,15 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
+import { useSelectItems } from "@/client/store/Menu/store";
+import { useOrderSelectItems } from "@/client/store/Order/store";
 
 export default function Page() {
   const [location, setLocation] = useState<"america" | "india">("america");
   const [qty, setQty] = useState(1);
+
+  const selectedItems = useOrderSelectItems((s) => s.selectedItems);
+  const addSelectedItem = useOrderSelectItems((s) => s.addSelectedItem);
 
   const handleValueChange = async (value: any) => {
     setLocation(value as "india" | "america");
@@ -32,8 +37,7 @@ export default function Page() {
             w-full b"
         >
           <p className="px-2 py-1 w-full border-b border-myborder">
-            {" "}
-            Create Order
+            Create Order{" "}
           </p>
           <div className="flex px-2">
             {" "}
@@ -68,7 +72,15 @@ export default function Page() {
                 <div className="pr-3 mr-0 m-0">
                   <div className="grid grid-cols-2 gap-3">
                     {Array.from({ length: 16 }).map((_, i) => (
-                      <CustomSelectCard key={i} className="rounded-none" />
+                      <CustomSelectCard
+                        key={i}
+                        className="rounded-none"
+                        name={""}
+                        cost={0}
+                        elapsedTime={""}
+                        location={"america"}
+                        menuId={""}
+                      />
                     ))}
                   </div>
                 </div>

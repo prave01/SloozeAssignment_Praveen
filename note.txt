@@ -1,1 +1,4 @@
-1. Need to work on the debouncing logic in the ShowAvailableItems.tsx
+1. Work on dashboard/order 
+  - manage the state of the adding and removing items
+  - complete the order summary component
+  - try to create separate state variable for better working
