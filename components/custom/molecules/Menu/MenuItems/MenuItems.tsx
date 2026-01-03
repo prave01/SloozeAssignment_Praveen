@@ -1,6 +1,6 @@
 "use client";
 
-import { useItem, useMenuItems } from "@/client/store/Menu/store";
+import { useMenuItems, useSelectItemsCard } from "@/client/store/Menu/store";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
@@ -18,7 +18,7 @@ export function MenuItems({ menuId }: { menuId: string }) {
   const menuItems = useMenuItems((s) => s.menuItems);
   const setMenuItems = useMenuItems((s) => s.setMenuItems);
 
-  const items = useItem((s) => s.itemsState);
+  const items = useSelectItemsCard((s) => s.selectedItems);
 
   const handleDelete = (itemName: string, itemId: string) => {
     (async () => {

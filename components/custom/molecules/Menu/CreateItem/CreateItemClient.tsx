@@ -13,7 +13,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateItem, uploadImage } from "@/server/serverFn";
 import { Spinner } from "@/components/ui/spinner";
 import { SelectDuration } from "../../SelectDuration";
-import { useItem } from "@/client/store";
 
 export function CreateItemClient({
   restaurant,
@@ -22,9 +21,6 @@ export function CreateItemClient({
 }) {
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-
-  const items = useItem((s) => s.itemsState);
-  const setItems = useItem((s) => s.setItems);
 
   const {
     handleSubmit,

@@ -1,10 +1,13 @@
 "use client";
 
 import { useSelectItems } from "@/client/store";
+import { useSelectItemsCard } from "@/client/store/Menu/store";
+import { useOrderSelectItems } from "@/client/store/Order/store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { CreateItemType } from "@/server/zod-schema";
+import { removeItem } from "motion/react";
 import { ClassNameValue } from "tailwind-merge";
 
 export function CustomSelectCard({
@@ -17,16 +20,28 @@ export function CustomSelectCard({
   menuId,
   className,
 }: CreateItemType & { menuId: string; className?: ClassNameValue }) {
-  const selectedItemIds = useSelectItems((s) => s.selectedItemIds);
-  const addItem = useSelectItems((s) => s.addItem);
-  const removeItem = useSelectItems((s) => s.removeItem);
+  const selectItems = useSelectItemsCard((s) => s.selectedItems);
+  const addItems = useSelectItemsCard((s) => s.addSelectedItem);
+  const removeItem = useSelectItemsCard((s) => s.removeItem);
 
   const handleSelect = () => {
-    if (!selectedItemIds.has(id as string)) {
-      addItem(id as string, menuId);
+    if (!selectItems.has(id as string)) {
+      addItems([
+        {
+          itemID: id as string,
+          item: {
+            elapsedTime,
+            location,
+            cost,
+            name,
+            id,
+            image,
+          },
+        },
+      ]);
       return;
     }
-    removeItem([{ itemId: id as string }]);
+    removeItem([id as string]);
   };
 
   return (
@@ -35,7 +50,7 @@ export function CustomSelectCard({
       className={cn(
         `rounded-md gap-2 flex flex-row p-2 items-start w-full h-fit
         border-myborder cursor-pointer`,
-        selectedItemIds.has(id as string) && "border-green-400/50 border",
+        selectItems.has(id as string) && "border-green-400/50 border",
         className,
       )}
     >
@@ -70,7 +85,7 @@ export function CustomSelectCard({
         {image && <AvatarImage src={image} className="rounded-sm" />}
         <AvatarFallback className="rounded-sm">
           <p className="text-4xl font-semibold">
-            {name?.split("")[0].toUpperCase()}
+            {name?.split("")[0]?.toUpperCase()}
           </p>
         </AvatarFallback>
       </Avatar>

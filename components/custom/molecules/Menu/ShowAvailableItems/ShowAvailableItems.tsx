@@ -1,5 +1,5 @@
 import { useDebounce } from "@/client/hooks";
-import { useItem, useSelectItems } from "@/client/store/Menu/store";
+import { useSelectItems, useSelectItemsCard } from "@/client/store/Menu/store";
 import { CustomSelectCard } from "@/components/custom/atoms/CustomSelectCard";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
@@ -20,9 +20,11 @@ export function ShowAvailableItems({
   restaurant: "america" | "india";
   menuId?: string;
 }) {
-  const items = useItem((s) => s.itemsState);
-  const setItems = useItem((s) => s.setItems);
-  const removeItem = useItem((s) => s.removeItems);
+  const selectedItems = useSelectItemsCard((s) => s.selectedItems);
+  const setItems = useSelectItemsCard((s) => s.addSelectedItem);
+  const removeItem = useSelectItemsCard((s) => s.removeItem);
+
+  const items = Array.from(selectedItems.values());
 
   const selectedCards = useSelectItems((s) => s.selectedItemIds);
   const removeCard = useSelectItems((s) => s.removeItem);
@@ -40,25 +42,25 @@ export function ShowAvailableItems({
     setRefreshKey((prevKey) => prevKey + 1);
   };
 
-  const handleAddItems = async () => {
-    try {
-      if (selectedCards.size < 1) {
-        toast.error("Please selelct atleast one to proceed");
-        return;
-      }
-      setAddLoading(true);
-      const addedItem = await AddItemsByMenu(selectedCards);
-
-      removeItem(addedItem);
-      removeCard(addedItem);
-
-      toast.success("Items inserted successfully");
-    } catch (err: any) {
-      toast.error("Somthing went wrong", { description: `${err}` });
-    } finally {
-      setAddLoading(false);
-    }
-  };
+  // const handleAddItems = async () => {
+  //   try {
+  //     if (selectedCards.size < 1) {
+  //       toast.error("Please selelct atleast one to proceed");
+  //       return;
+  //     }
+  //     setAddLoading(true);
+  //     const addedItem = await AddItemsByMenu(selectedCards);
+  //
+  //     removeItem(addedItem);
+  //     removeCard(addedItem);
+  //
+  //     toast.success("Items inserted successfully");
+  //   } catch (err: any) {
+  //     toast.error("Somthing went wrong", { description: `${err}` });
+  //   } finally {
+  //     setAddLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
     if (!menuId) return;
@@ -127,9 +129,9 @@ export function ShowAvailableItems({
             >
               <RefreshCcw className="text-muted-foreground" />
             </Button>
-            <Button onClick={handleAddItems}>
-              {addLoading ? <Spinner className="size-5" /> : "Add Items"}
-            </Button>
+            {/* <Button> */}
+            {/*   {addLoading ? <Spinner className="size-5" /> : "Add Items"} */}
+            {/* </Button> */}
           </div>
         </div>
 

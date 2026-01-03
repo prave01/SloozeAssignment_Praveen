@@ -1,24 +1,42 @@
 import { CreateItemType } from "@/server/zod-schema";
 import { create } from "zustand";
 
-type ItemObjectStore = {
-  itemsState: Array<CreateItemType>;
-  setItems: (buffer: Array<CreateItemType>) => void;
-  removeItems: (items: { itemId: string }[]) => void;
+type SelectItemCard = {
+  selectedItems: Map<string, CreateItemType>;
+  addSelectedItem: (
+    buffer: {
+      itemID: string;
+      item: CreateItemType;
+    }[],
+  ) => void;
+  removeItem: (items: string[]) => void;
+  clear: () => void;
 };
 
-export const useItem = create<ItemObjectStore>((set) => ({
-  itemsState: [],
-  setItems: (buffer) => set({ itemsState: buffer }),
-  removeItems: (items) =>
+export const useSelectItemsCard = create<SelectItemCard>((set) => ({
+  selectedItems: new Map(),
+  addSelectedItem: (buffer) =>
     set((state) => {
-      const idsToRemove = new Set(items.map((i) => i.itemId));
+      const next = new Map(state.selectedItems);
+      for (var i of buffer) {
+        next.set(i.itemID, i.item);
+      }
+      console.log(next);
       return {
-        itemsState: state.itemsState.filter(
-          (item) => !idsToRemove.has(item.id as string),
-        ),
+        selectedItems: next,
       };
     }),
+  removeItem: (buffer) =>
+    set((state) => {
+      const next = new Map(state.selectedItems);
+      for (var i of buffer) {
+        next.delete(i);
+      }
+      return {
+        selectedItems: next,
+      };
+    }),
+  clear: () => set({ selectedItems: new Map() }),
 }));
 
 type SelectItemsStore = {

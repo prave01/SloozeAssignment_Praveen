@@ -15,7 +15,6 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
-import { useSelectItems } from "@/client/store/Menu/store";
 import { useOrderSelectItems } from "@/client/store/Order/store";
 
 export default function Page() {
