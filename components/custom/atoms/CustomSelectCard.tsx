@@ -1,13 +1,9 @@
 "use client";
 
-import { useSelectItems } from "@/client/store";
-import { useSelectItemsCard } from "@/client/store/Menu/store";
-import { useOrderSelectItems } from "@/client/store/Order/store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { CreateItemType } from "@/server/zod-schema";
-import { removeItem } from "motion/react";
 import { ClassNameValue } from "tailwind-merge";
 
 export function CustomSelectCard({
@@ -19,29 +15,22 @@ export function CustomSelectCard({
   id,
   menuId,
   className,
-}: CreateItemType & { menuId: string; className?: ClassNameValue }) {
-  const selectItems = useSelectItemsCard((s) => s.selectedItems);
-  const addItems = useSelectItemsCard((s) => s.addSelectedItem);
-  const removeItem = useSelectItemsCard((s) => s.removeItem);
-
+  selectedItems,
+  setCardItem,
+  removeItem,
+}: CreateItemType & {
+  menuId: string;
+  className?: ClassNameValue;
+  selectedItems: Map<string, string>;
+  setCardItem: (buffer: { itemId: string; menuId: string }[]) => void;
+  removeItem: (buffer: { itemId: string }[]) => void;
+}) {
   const handleSelect = () => {
-    if (!selectItems.has(id as string)) {
-      addItems([
-        {
-          itemID: id as string,
-          item: {
-            elapsedTime,
-            location,
-            cost,
-            name,
-            id,
-            image,
-          },
-        },
-      ]);
+    if (!selectedItems.has(id as string)) {
+      setCardItem([{ itemId: id as string, menuId }]);
       return;
     }
-    removeItem([id as string]);
+    removeItem([{ itemId: id as string }]);
   };
 
   return (
@@ -50,7 +39,7 @@ export function CustomSelectCard({
       className={cn(
         `rounded-md gap-2 flex flex-row p-2 items-start w-full h-fit
         border-myborder cursor-pointer`,
-        selectItems.has(id as string) && "border-green-400/50 border",
+        selectedItems.has(id as string) && "border-green-400/50 border",
         className,
       )}
     >

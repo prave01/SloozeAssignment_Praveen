@@ -1,6 +1,6 @@
 "use client";
 
-import { useMenuItems, useSelectItemsCard } from "@/client/store/Menu/store";
+import { useMenuItems } from "@/client/store/Menu/store";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardTitle } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
@@ -8,7 +8,7 @@ import {
   DeleteMenuItemByMenuId,
   GetMenuItemsByMenuId,
 } from "@/server/serverFn";
-import { Trash2Icon } from "lucide-react";
+import { Trash2Icon, RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -18,36 +18,59 @@ export function MenuItems({ menuId }: { menuId: string }) {
   const menuItems = useMenuItems((s) => s.menuItems);
   const setMenuItems = useMenuItems((s) => s.setMenuItems);
 
-  const items = useSelectItemsCard((s) => s.selectedItems);
-
-  const handleDelete = (itemName: string, itemId: string) => {
-    (async () => {
-      try {
-        setLoading(true);
-        await DeleteMenuItemByMenuId(menuId, itemId);
-        setMenuItems(await GetMenuItemsByMenuId(menuId));
-        toast.success(`Item ${itemName} deleted successfully`);
-      } catch (err: any) {
-        toast.error("Something went wrong", { description: String(err) });
-      } finally {
-        setLoading(false);
-      }
-    })();
-  };
-
-  useEffect(() => {
-    (async () => {
+  const fetchMenuItems = async () => {
+    try {
       setLoading(true);
       const result = await GetMenuItemsByMenuId(menuId);
       setMenuItems(result);
+    } catch (err: any) {
+      toast.error("Failed to fetch menu items", {
+        description: String(err),
+      });
+    } finally {
       setLoading(false);
-    })();
-  }, [menuId, items]);
+    }
+  };
+
+  const handleDelete = async (itemName: string, itemId: string) => {
+    try {
+      setLoading(true);
+      await DeleteMenuItemByMenuId(menuId, itemId);
+      await fetchMenuItems();
+      toast.success(`Item ${itemName} deleted successfully`);
+    } catch (err: any) {
+      toast.error("Something went wrong", {
+        description: String(err),
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMenuItems();
+  }, [menuId]);
 
   return (
     <div className="group w-1/3 h-full flex flex-col gap-2">
-      <CardTitle className="border border-myborder py-1 px-3 text-lg">
-        Menu Items
+      <CardTitle
+        className="border border-myborder py-1 px-3 text-lg flex items-center
+          justify-between"
+      >
+        <span>Menu Items</span>
+
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={fetchMenuItems}
+          disabled={loading}
+          className="h-7 w-7"
+        >
+          <RefreshCcw
+            className={`size-4 transition-transform ${loading ? "animate-spin" : ""
+              }`}
+          />
+        </Button>
       </CardTitle>
 
       <CardContent
@@ -56,7 +79,7 @@ export function MenuItems({ menuId }: { menuId: string }) {
       >
         {loading && (
           <div
-            className="absolute flex items-center justify-center brightness-75
+            className="absolute flex items-center justify-center
               backdrop-blur-sm w-full h-full"
           >
             <Spinner className="size-5" />
@@ -74,7 +97,7 @@ export function MenuItems({ menuId }: { menuId: string }) {
           </div>
         )}
 
-        <div className="flex flex-col gap-2 h-100 w-full">
+        <div className="flex flex-col gap-2 w-full">
           {menuItems.map(({ item }) => (
             <div
               key={item.id}
@@ -102,7 +125,7 @@ export function MenuItems({ menuId }: { menuId: string }) {
                 size="icon"
                 variant="ghost"
                 onClick={() => handleDelete(item.name, item.id)}
-                className="cursor-pointer hover:bg-red-500/10"
+                className="hover:bg-red-500/10"
               >
                 <Trash2Icon className="text-red-500 size-4" />
               </Button>

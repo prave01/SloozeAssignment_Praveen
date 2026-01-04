@@ -1,5 +1,9 @@
 import { useDebounce } from "@/client/hooks";
-import { useSelectItems, useSelectItemsCard } from "@/client/store/Menu/store";
+import {
+  useAvailableItems,
+  useMenuItems,
+  useSelectItemsCard,
+} from "@/client/store/Menu/store";
 import { CustomSelectCard } from "@/components/custom/atoms/CustomSelectCard";
 import { Button } from "@/components/ui/button";
 import { CardTitle } from "@/components/ui/card";
@@ -20,15 +24,19 @@ export function ShowAvailableItems({
   restaurant: "america" | "india";
   menuId?: string;
 }) {
+  // this is for storing the available items from db
+  const items = useAvailableItems((s) => s.availableItems);
+  const addItems = useAvailableItems((s) => s.addItems);
+  const filterItems = useAvailableItems((s) => s.filterItems);
+  const clear = useAvailableItems((s) => s.clear);
+
+  // this is for selecting the card
   const selectedItems = useSelectItemsCard((s) => s.selectedItems);
   const setItems = useSelectItemsCard((s) => s.addSelectedItem);
   const removeItem = useSelectItemsCard((s) => s.removeItem);
 
-  const items = Array.from(selectedItems.values());
-
-  const selectedCards = useSelectItems((s) => s.selectedItemIds);
-  const removeCard = useSelectItems((s) => s.removeItem);
-  const clear = useSelectItems((s) => s.clear);
+  // to track the update of the menuItems
+  const setMenuItems = useMenuItems((s) => s.setMenuItems);
 
   const [loading, setLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
@@ -42,25 +50,25 @@ export function ShowAvailableItems({
     setRefreshKey((prevKey) => prevKey + 1);
   };
 
-  // const handleAddItems = async () => {
-  //   try {
-  //     if (selectedCards.size < 1) {
-  //       toast.error("Please selelct atleast one to proceed");
-  //       return;
-  //     }
-  //     setAddLoading(true);
-  //     const addedItem = await AddItemsByMenu(selectedCards);
-  //
-  //     removeItem(addedItem);
-  //     removeCard(addedItem);
-  //
-  //     toast.success("Items inserted successfully");
-  //   } catch (err: any) {
-  //     toast.error("Somthing went wrong", { description: `${err}` });
-  //   } finally {
-  //     setAddLoading(false);
-  //   }
-  // };
+  const handleAddItems = async () => {
+    try {
+      if (selectedItems.size < 1) {
+        toast.error("Please selelct atleast one to proceed");
+        return;
+      }
+      setAddLoading(true);
+      const addedItem = await AddItemsByMenu(selectedItems);
+
+      filterItems(addedItem);
+      removeItem(addedItem);
+
+      toast.success("Items inserted successfully");
+    } catch (err: any) {
+      toast.error("Somthing went wrong", { description: `${err}` });
+    } finally {
+      setAddLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!menuId) return;
@@ -81,12 +89,12 @@ export function ShowAvailableItems({
           (item) => !menuItemIds.has(item.id),
         );
 
-        setItems(availableItems);
+        addItems(availableItems);
       } finally {
         setLoading(false);
       }
     })();
-  }, [menuId, debouncedSearch, restaurant, refreshKey]);
+  }, [menuId, debouncedSearch, restaurant, refreshKey, setMenuItems]);
 
   return (
     <div
@@ -119,7 +127,7 @@ export function ShowAvailableItems({
           {" "}
           <div className="text-neutral-500 text-sm">
             Selected Items -
-            <span className="text-primary"> {selectedCards.size}</span>
+            <span className="text-primary"> {selectedItems.size}</span>
           </div>
           <div className="flex items-center justify-center gap-2">
             {" "}
@@ -129,9 +137,9 @@ export function ShowAvailableItems({
             >
               <RefreshCcw className="text-muted-foreground" />
             </Button>
-            {/* <Button> */}
-            {/*   {addLoading ? <Spinner className="size-5" /> : "Add Items"} */}
-            {/* </Button> */}
+            <Button onClick={handleAddItems}>
+              {addLoading ? <Spinner className="size-5" /> : "Add Items"}
+            </Button>
           </div>
         </div>
 
@@ -161,6 +169,9 @@ export function ShowAvailableItems({
               id={item.id}
               elapsedTime={item.elapsedTime}
               image={item.image ?? undefined}
+              setCardItem={setItems}
+              selectedItems={selectedItems}
+              removeItem={removeItem}
             />
           ))}
         </div>

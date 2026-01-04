@@ -1,15 +1,40 @@
 import { CreateItemType } from "@/server/zod-schema";
 import { create } from "zustand";
 
+// store for storing the available data from the db
+type AvailableItems = {
+  availableItems: Array<CreateItemType>;
+  addItems: (buffer: Array<CreateItemType>) => void;
+  filterItems: (buffer: { itemId: string }[]) => void;
+  clear: () => void;
+};
+
+export const useAvailableItems = create<AvailableItems>((set) => ({
+  availableItems: [],
+  addItems: (buffer) => set({ availableItems: buffer }),
+  filterItems: (buffer) =>
+    set((state) => {
+      const removeIds = new Set(buffer.map((b) => b.itemId));
+
+      return {
+        availableItems: state.availableItems.filter(
+          (item) => item.id && !removeIds.has(item.id),
+        ),
+      };
+    }),
+  clear: () => set({ availableItems: [] }),
+}));
+
+// store for selecting cards
 type SelectItemCard = {
-  selectedItems: Map<string, CreateItemType>;
+  selectedItems: Map<string, string>;
   addSelectedItem: (
     buffer: {
-      itemID: string;
-      item: CreateItemType;
+      itemId: string;
+      menuId: string;
     }[],
   ) => void;
-  removeItem: (items: string[]) => void;
+  removeItem: (buffer: { itemId: string }[]) => void;
   clear: () => void;
 };
 
@@ -18,25 +43,22 @@ export const useSelectItemsCard = create<SelectItemCard>((set) => ({
   addSelectedItem: (buffer) =>
     set((state) => {
       const next = new Map(state.selectedItems);
-      for (var i of buffer) {
-        next.set(i.itemID, i.item);
+      for (const i of buffer) {
+        next.set(i.itemId, i.menuId);
       }
-      console.log(next);
-      return {
-        selectedItems: next,
-      };
+      return { selectedItems: next };
     }),
   removeItem: (buffer) =>
     set((state) => {
+      const removeIds = new Set(buffer.map((item) => item.itemId));
       const next = new Map(state.selectedItems);
-      for (var i of buffer) {
-        next.delete(i);
+      for (const id of removeIds) {
+        next.delete(id);
       }
-      return {
-        selectedItems: next,
-      };
+      return { selectedItems: next };
     }),
-  clear: () => set({ selectedItems: new Map() }),
+
+  clear: () => ({ selectedItems: new Map() }),
 }));
 
 type SelectItemsStore = {
