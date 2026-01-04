@@ -1,7 +1,6 @@
 import { useDebounce } from "@/client/hooks";
 import {
   useAvailableItems,
-  useMenuItems,
   useSelectItemsCard,
 } from "@/client/store/Menu/store";
 import { CustomSelectCard } from "@/components/custom/atoms/CustomSelectCard";
@@ -34,9 +33,6 @@ export function ShowAvailableItems({
   const selectedItems = useSelectItemsCard((s) => s.selectedItems);
   const setItems = useSelectItemsCard((s) => s.addSelectedItem);
   const removeItem = useSelectItemsCard((s) => s.removeItem);
-
-  // to track the update of the menuItems
-  const setMenuItems = useMenuItems((s) => s.setMenuItems);
 
   const [loading, setLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
@@ -94,7 +90,7 @@ export function ShowAvailableItems({
         setLoading(false);
       }
     })();
-  }, [menuId, debouncedSearch, restaurant, refreshKey, setMenuItems]);
+  }, [menuId, debouncedSearch, restaurant, refreshKey]);
 
   return (
     <div

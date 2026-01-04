@@ -1,59 +1,90 @@
+import { CreateItemType } from "@/server/zod-schema";
 import { create } from "zustand";
 
-type SelectItems = {
-  selectedItems: Map<string, string>;
-  addSelectedItem: (itemId: string, menuId: string) => void;
-  removeSelectedItem: (itemId: string) => void;
+// store for storing the available data from the db
+type AvailableItemsOrder = {
+  availableItems: Array<CreateItemType>;
+  addItems: (buffer: Array<CreateItemType>) => void;
+  filterItems: (buffer: { itemId: string }[]) => void;
   clear: () => void;
 };
 
-export const useOrderSelectItems = create<SelectItems>((set) => ({
-  selectedItems: new Map(),
-  addSelectedItem: (itemId, menuId) =>
+export const useAvailableItemsOrder = create<AvailableItemsOrder>((set) => ({
+  availableItems: [],
+  addItems: (buffer) => set({ availableItems: buffer }),
+  filterItems: (buffer) =>
     set((state) => {
-      const next = new Map(state.selectedItems);
-      next.set(itemId, menuId);
+      const removeIds = new Set(buffer.map((b) => b.itemId));
+
       return {
-        selectedItems: next,
+        availableItems: state.availableItems.filter(
+          (item) => item.id && !removeIds.has(item.id),
+        ),
       };
     }),
-  removeSelectedItem: (itemId) =>
-    set((state) => {
-      const next = new Map(state.selectedItems);
-      next.delete(itemId);
-      return {
-        selectedItems: next,
-      };
-    }),
-  clear: () => set({ selectedItems: new Map() }),
+  clear: () => set({ availableItems: [] }),
 }));
 
-type OnboardOrderItems = {
-  onboardItems: Map<string, string>;
-  addOnboardItem: (itemId: string, menuId: string) => void;
-  removeOnboardItem: (itemId: string) => void;
+// store for selecting cards
+type SelectItemCard = {
+  selectedItems: Map<string, string>;
+  addSelectedItem: (
+    buffer: {
+      itemId: string;
+      menuId: string;
+    }[],
+  ) => void;
+  removeItem: (buffer: { itemId: string }[]) => void;
   clear: () => void;
 };
 
-export const useOnboardItems = create<OnboardOrderItems>((set) => ({
-  onboardItems: new Map(),
-  addOnboardItem: (itemId, menuId) =>
+// store for selecting cards
+export const useSelectItemsCardOrder = create<SelectItemCard>((set) => ({
+  selectedItems: new Map(),
+  addSelectedItem: (buffer) =>
     set((state) => {
-      const next = new Map(state.onboardItems);
+      const next = new Map(state.selectedItems);
+      for (const i of buffer) {
+        next.set(i.itemId, i.menuId);
+      }
+      return { selectedItems: next };
+    }),
+  removeItem: (buffer) =>
+    set((state) => {
+      const removeIds = new Set(buffer.map((item) => item.itemId));
+      const next = new Map(state.selectedItems);
+      for (const id of removeIds) {
+        next.delete(id);
+      }
+      return { selectedItems: next };
+    }),
+
+  clear: () => ({ selectedItems: new Map() }),
+}));
+
+type SelectItemsStore = {
+  selectedItemIds: Map<string, string>;
+  addItem: (itemId: string, menuId: string) => void;
+  removeItem: (items: { itemId: string }[]) => void;
+  clear: () => void;
+};
+
+export const useSelectItemsOrder = create<SelectItemsStore>((set) => ({
+  selectedItemIds: new Map(),
+  addItem: (itemId, menuId) =>
+    set((state) => {
+      const next = new Map(state.selectedItemIds);
       next.set(itemId, menuId);
-      return {
-        onboardItems: next,
-      };
+      return { selectedItemIds: next };
     }),
-  removeOnboardItem: (itemId) =>
+  removeItem: (items) =>
     set((state) => {
-      const next = new Map(state.onboardItems);
-      next.delete(itemId);
-      return {
-        onboardItems: next,
-      };
+      const next = new Map(state.selectedItemIds);
+      for (const { itemId } of items) {
+        next.delete(itemId);
+      }
+      return { selectedItemIds: next };
     }),
-  clear: () => {
-    set({ onboardItems: new Map() });
-  },
+
+  clear: () => set({ selectedItemIds: new Map() }),
 }));

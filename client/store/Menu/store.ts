@@ -68,30 +68,6 @@ type SelectItemsStore = {
   clear: () => void;
 };
 
-export const useSelectItems = create<SelectItemsStore>((set) => ({
-  selectedItemIds: new Map(),
-
-  addItem: (itemId, menuId) =>
-    set((state) => {
-      const next = new Map(state.selectedItemIds);
-      next.set(itemId, menuId);
-      return { selectedItemIds: next };
-    }),
-
-  removeItem: (items) =>
-    set((state) => {
-      const next = new Map(state.selectedItemIds);
-
-      for (const { itemId } of items) {
-        next.delete(itemId);
-      }
-
-      return { selectedItemIds: next };
-    }),
-
-  clear: () => set({ selectedItemIds: new Map() }),
-}));
-
 type MenuItemWithItem = {
   menuId: string;
   itemId: string;
