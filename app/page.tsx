@@ -1,171 +1,126 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { CreateUser, createRestaurant } from "@/server/serverFn";
-import { useState } from "react";
-import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth/auth-client";
+import { motion } from "framer-motion";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+  ArrowRight,
+  ChefHat,
+  LayoutDashboard,
+  Terminal
+} from "lucide-react";
+import Link from "next/link";
+import { ModeToggle } from "@/components/custom/molecules/ModeToggle";
 
 export default function Home() {
-  const [loading, setLoading] = useState(false);
-  const [restaurantLoading, setRestaurantLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    location: "america" as "america" | "india" | "both",
-    role: "admin" as "admin" | "member",
-  });
-  const [restaurantData, setRestaurantData] = useState({
-    name: "",
-    location: "india" as "america" | "india",
-  });
+  const { data: session } = authClient.useSession();
 
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
-      await CreateUser(formData);
-      toast.success("Admin User Created Successfully");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create user");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRestaurantSubmit = async () => {
-    try {
-      if (!restaurantData.name.trim()) {
-        toast.error("Restaurant name is required");
-        return;
-      }
-      setRestaurantLoading(true);
-      await createRestaurant(restaurantData);
-      toast.success("Restaurant Created Successfully");
-      setRestaurantData({ name: "", location: "india" });
-    } catch (error: any) {
-      toast.error(error.message || "Failed to create restaurant");
-    } finally {
-      setRestaurantLoading(false);
-    }
-  };
+  const asciiArt = `
+   ______________________________
+ / \\                             \\.
+|   |                            |.
+ \\_ |    ____________________    |.
+    |   |                    |   |.
+    |   |    >_ SLOOZE       |   |.
+    |   |                    |   |.
+    |   |    [ AUTH: OK ]    |   |.
+    |   |____________________|   |.
+    |                            |.
+    |   o   o   o                |.
+    |                            |.
+    |____________________________|.
+  `;
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background p-4">
-      <div className="flex gap-6 flex-wrap justify-center max-w-5xl">
-        {/* Restaurant Creation Card */}
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Create Restaurant</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Input
-                placeholder="Restaurant Name"
-                value={restaurantData.name}
-                onChange={(e) =>
-                  setRestaurantData({ ...restaurantData, name: e.target.value })
-                }
-              />
-              <Select
-                value={restaurantData.location}
-                onValueChange={(value: "america" | "india") =>
-                  setRestaurantData({ ...restaurantData, location: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Location" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="america">America</SelectItem>
-                  <SelectItem value="india">India</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button
-              className="w-full"
-              onClick={handleRestaurantSubmit}
-              disabled={restaurantLoading}
-            >
-              {restaurantLoading ? "Creating..." : "Create Restaurant"}
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Admin User Creation Card */}
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Create Admin User</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Input
-                placeholder="Name"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
-              />
-              <Input
-                placeholder="Email"
-                type="email"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-              />
-              <Input
-                placeholder="Password"
-                type="password"
-                value={formData.password}
-                onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-              />
-              <Select
-                value={formData.location}
-                onValueChange={(value: "america" | "india" | "both") =>
-                  setFormData({ ...formData, location: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Location" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="america">America</SelectItem>
-                  <SelectItem value="india">India</SelectItem>
-                  <SelectItem value="both">Both (Admin Only)</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select
-                value={formData.role}
-                onValueChange={(value: "admin" | "member") =>
-                  setFormData({ ...formData, role: value })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="member">Member</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <Button className="w-full" onClick={handleSubmit} disabled={loading}>
-              {loading ? "Creating..." : "Create User"}
-            </Button>
-          </CardContent>
-        </Card>
+    <div className="min-h-screen bg-background text-foreground overflow-hidden selection:bg-primary/30 flex flex-col">
+      {/* Background Decorative Elements - Subtle Neutrals */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-foreground/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-foreground/5 rounded-full blur-[120px]" />
       </div>
+
+      {/* Navigation */}
+      <nav className="flex items-center justify-between px-6 py-6 max-w-7xl mx-auto w-full border-b border-myborder/50 backdrop-blur-md sticky top-0 z-50">
+        <div className="flex items-center gap-2 group cursor-pointer">
+          <div className="bg-primary p-2 rounded-lg group-hover:rotate-12 transition-transform duration-300">
+            <ChefHat className="size-6 text-primary-foreground" />
+          </div>
+          <span className="text-xl font-bold tracking-tight">Slooze<span className="text-primary">.</span></span>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <ModeToggle />
+          {session ? (
+            <Link href="/dashboard">
+              <Button variant="outline" className="rounded-full border-myborder hover:bg-accent transition-all">
+                <LayoutDashboard className="mr-2 size-4" />
+                Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/login">
+              <Button variant="ghost" className="rounded-full hover:bg-accent">
+                Login
+              </Button>
+            </Link>
+          )}
+          <Link href={session ? "/dashboard" : "/login"}>
+            <Button className="rounded-full px-6 shadow-lg shadow-primary/10 hover:shadow-primary/20 transition-all">
+              Get Started
+            </Button>
+          </Link>
+        </div>
+      </nav>
+
+      {/* Hero Section Only */}
+      <main className="flex-1 flex items-center justify-center max-w-7xl mx-auto px-6 w-full">
+        <div className="grid lg:grid-cols-2 gap-12 items-center w-full">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            className="space-y-8"
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-foreground/5 border border-foreground/10 text-muted-foreground text-xs font-medium">
+              <Terminal className="size-3" />
+              <span>v1.0.0-stable</span>
+            </div>
+
+            <h1 className="text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1]">
+              Restaurant <br />
+              <span className="text-primary">
+                Management
+              </span>
+              <br />
+              Simplified.
+            </h1>
+
+            <p className="text-xl text-muted-foreground max-w-[500px] leading-relaxed">
+              A minimalist, high-performance operating system for modern restaurant logistics. Built for scale, designed for speed.
+            </p>
+
+            <div className="flex flex-wrap gap-4">
+              <Link href={session ? "/dashboard" : "/login"}>
+                <Button size="lg" className="rounded-full px-8 h-14 text-lg font-semibold group">
+                  {session ? "Enter Dashboard" : "Get Started"}
+                  <ArrowRight className="ml-2 size-5 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="hidden lg:flex justify-end"
+          >
+            <pre className="font-mono text-[10px] leading-tight text-primary/60 select-none pointer-events-none animate-in fade-in slide-in-from-right-8 duration-1000">
+              {asciiArt}
+            </pre>
+          </motion.div>
+        </div>
+      </main>
     </div>
   );
 }
