@@ -29,6 +29,7 @@ export function OrderSummary() {
         {itemsArray.map((item) => (
           <CustomOrderCard
             key={item?.id}
+            id={item.id}
             location={item.location}
             name={item.name}
           />

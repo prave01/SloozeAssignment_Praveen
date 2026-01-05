@@ -27,13 +27,14 @@ export const useAvailableItemsOrder = create<AvailableItemsOrder>((set) => ({
 
 // store for selecting cards
 type SelectItemCard = {
-  selectedItems: Map<string, CreateItemType>;
+  selectedItems: Map<string, CreateItemType & { quantity: number }>;
   addSelectedItem: (
     buffer: {
       itemId: string;
-      item: CreateItemType;
+      item: CreateItemType & { quantity: number };
     }[],
   ) => void;
+  updateQuantity: (itemId: string, qty: number) => void;
   removeItem: (buffer: { itemId: string }[]) => void;
   clear: () => void;
 };
@@ -41,12 +42,27 @@ type SelectItemCard = {
 // store for selecting cards
 export const useSelectItemsCardOrder = create<SelectItemCard>((set) => ({
   selectedItems: new Map(),
+
   addSelectedItem: (buffer) =>
     set((state) => {
       const next = new Map(state.selectedItems);
       for (const i of buffer) {
         next.set(i.itemId, i.item);
       }
+      return { selectedItems: next };
+    }),
+  updateQuantity: (itemId, qty) =>
+    set((state) => {
+      const next = new Map(state.selectedItems);
+      const existing = next.get(itemId);
+
+      if (!existing) return state;
+
+      next.set(itemId, {
+        ...existing,
+        quantity: Math.max(1, qty),
+      });
+
       return { selectedItems: next };
     }),
   removeItem: (buffer) =>
