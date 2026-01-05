@@ -27,11 +27,11 @@ export const useAvailableItemsOrder = create<AvailableItemsOrder>((set) => ({
 
 // store for selecting cards
 type SelectItemCard = {
-  selectedItems: Map<string, string>;
+  selectedItems: Map<string, CreateItemType>;
   addSelectedItem: (
     buffer: {
       itemId: string;
-      menuId: string;
+      item: CreateItemType;
     }[],
   ) => void;
   removeItem: (buffer: { itemId: string }[]) => void;
@@ -45,7 +45,7 @@ export const useSelectItemsCardOrder = create<SelectItemCard>((set) => ({
     set((state) => {
       const next = new Map(state.selectedItems);
       for (const i of buffer) {
-        next.set(i.itemId, i.menuId);
+        next.set(i.itemId, i.item);
       }
       return { selectedItems: next };
     }),
@@ -58,33 +58,5 @@ export const useSelectItemsCardOrder = create<SelectItemCard>((set) => ({
       }
       return { selectedItems: next };
     }),
-
   clear: () => ({ selectedItems: new Map() }),
-}));
-
-type SelectItemsStore = {
-  selectedItemIds: Map<string, string>;
-  addItem: (itemId: string, menuId: string) => void;
-  removeItem: (items: { itemId: string }[]) => void;
-  clear: () => void;
-};
-
-export const useSelectItemsOrder = create<SelectItemsStore>((set) => ({
-  selectedItemIds: new Map(),
-  addItem: (itemId, menuId) =>
-    set((state) => {
-      const next = new Map(state.selectedItemIds);
-      next.set(itemId, menuId);
-      return { selectedItemIds: next };
-    }),
-  removeItem: (items) =>
-    set((state) => {
-      const next = new Map(state.selectedItemIds);
-      for (const { itemId } of items) {
-        next.delete(itemId);
-      }
-      return { selectedItemIds: next };
-    }),
-
-  clear: () => set({ selectedItemIds: new Map() }),
 }));

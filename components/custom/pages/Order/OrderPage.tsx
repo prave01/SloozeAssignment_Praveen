@@ -21,7 +21,6 @@ export function OrderPage() {
     (async () => {
       const id = await getMenuId(location);
       setMenuId(id as string);
-      console.log("I have changed", id);
     })();
   }, [location]);
 
@@ -32,7 +31,7 @@ export function OrderPage() {
   return (
     <>
       {" "}
-      <div className="relative z-10 p-40">
+      <div className="relative z-10 p-30">
         <div className="border border-myborder min-h-100 h-full backdrop-blur-sm">
           <CardTitle
             className="flex flex-col gap-2 items-start text-xl font-semibold

@@ -159,6 +159,7 @@ export function ShowAvailableItems({
             <CustomSelectCard
               key={item.id ?? `${item.name}-${item.location}-${index}`}
               name={item.name}
+              type="menu"
               cost={item.cost}
               menuId={menuId as string}
               location={item.location}

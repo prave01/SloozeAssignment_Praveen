@@ -1,5 +1,7 @@
 "use client";
 
+import { useAvailableItems } from "@/client/store/Menu/store";
+import { useSelectItemsCardOrder } from "@/client/store/Order/store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -15,19 +17,38 @@ export function CustomSelectCard({
   id,
   menuId,
   className,
+  type,
   selectedItems,
   setCardItem,
+  setOrderItem,
   removeItem,
+  filterItem,
 }: CreateItemType & {
   menuId: string;
   className?: ClassNameValue;
-  selectedItems: Map<string, string>;
-  setCardItem: (buffer: { itemId: string; menuId: string }[]) => void;
+  type: "order" | "menu";
+  selectedItems: Map<string, string | CreateItemType>;
+  setCardItem?: (buffer: { itemId: string; menuId: string }[]) => void;
+  setOrderItem?: (buffer: { itemId: string; item: CreateItemType }[]) => void;
   removeItem: (buffer: { itemId: string }[]) => void;
+  filterItem?: (buffer: { itemId: string }[]) => void;
 }) {
   const handleSelect = () => {
-    if (!selectedItems.has(id as string)) {
-      setCardItem([{ itemId: id as string, menuId }]);
+    if (type === "menu") {
+      if (!selectedItems.has(id as string) && setCardItem) {
+        setCardItem([{ itemId: id as string, menuId }]);
+        return;
+      }
+      return;
+    }
+    if (!selectedItems.has(id as string) && setOrderItem && filterItem) {
+      setOrderItem([
+        {
+          itemId: id as string,
+          item: { name, cost, id, elapsedTime, location, image },
+        },
+      ]);
+      filterItem([{ itemId: id as string }]);
       return;
     }
     removeItem([{ itemId: id as string }]);

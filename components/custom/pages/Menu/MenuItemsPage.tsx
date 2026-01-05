@@ -22,7 +22,6 @@ export function MenuItemsPage() {
     (async () => {
       const id = await getMenuId(location);
       setMenuId(id as string);
-      console.log("I have changed", id);
     })();
   }, [location]);
 

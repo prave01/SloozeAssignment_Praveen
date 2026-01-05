@@ -6,10 +6,12 @@ import {
   useSelectItemsCardOrder,
 } from "@/client/store/Order/store";
 import { CustomSelectCard } from "@/components/custom/atoms/CustomSelectCard";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   AddItemsByMenu,
+  AddOrderItems,
   GetItemsByQuery,
   GetMenuItems,
 } from "@/server/serverFn";
@@ -48,10 +50,6 @@ export function CreateOrder({
         return;
       }
       setAddLoading(true);
-      const addedItem = await AddItemsByMenu(selectedItems);
-
-      filterItems(addedItem);
-      removeItem(addedItem);
 
       toast.success("Items inserted successfully");
     } catch (err: any) {
@@ -73,8 +71,6 @@ export function CreateOrder({
           GetMenuItems(menuId),
         ]);
 
-        console.log(allItems);
-
         const menuItemIds = new Set(menuItems.map((item) => item.itemId));
 
         const availableItems = allItems.filter(
@@ -90,12 +86,12 @@ export function CreateOrder({
 
   return (
     <Card
-      className="w-fit gap-2 pl-3 py-2 rounded-none dark:bg-accent/50
-        bg-neutral-200 shadow-none border border-myborder"
+      className="w-full max-w-[40%] gap-2 pl-3 py-2 rounded-none
+        dark:bg-accent/50 bg-neutral-200 shadow-none border border-myborder"
     >
       <CardTitle className="font-medium text-lg">Available Items</CardTitle>
-      <CardContent className="p-0">
-        <div className="w-full">
+      <CardContent className="p-0 flex flex-col gap-2">
+        <div className="w-full flex justify-between pr-2 items-center">
           <input
             value={searchInput}
             placeholder="Find Items by Name"
@@ -103,26 +99,33 @@ export function CreateOrder({
               e.preventDefault();
               setSearchInput(e.target.value);
             }}
-            className={`rounded-none placeholder:text-xs text-sm w-full
+            className={`rounded-none w-[60%] placeholder:text-xs text-sm
               placeholder:pl-1 placeholder:italic focus:outline-none
               focus:bg-zinc-500/20 border border-myborder px-2 py-2`}
           />
+
+          <Button onClick={handleAddItems} className="">
+            Add
+          </Button>
         </div>
         <ScrollArea className="h-108 w-fit">
           <div className="pr-3 mr-0 m-0">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-x-3 gap-y-2">
               {items.map((item, index) => (
                 <CustomSelectCard
                   key={item.id ?? `${item.name}-${item.location}-${index}`}
                   className="rounded-none"
                   name={item.name}
                   cost={0}
+                  id={item.id}
                   elapsedTime={item.elapsedTime}
                   location={item.location}
                   menuId={menuId as string}
+                  type="order"
                   selectedItems={selectedItems}
-                  setCardItem={setItems}
+                  setOrderItem={setItems}
                   removeItem={removeItem}
+                  filterItem={filterItems}
                 />
               ))}{" "}
             </div>

@@ -57,16 +57,8 @@ export const useSelectItemsCard = create<SelectItemCard>((set) => ({
       }
       return { selectedItems: next };
     }),
-
   clear: () => ({ selectedItems: new Map() }),
 }));
-
-type SelectItemsStore = {
-  selectedItemIds: Map<string, string>;
-  addItem: (itemId: string, menuId: string) => void;
-  removeItem: (items: { itemId: string }[]) => void;
-  clear: () => void;
-};
 
 type MenuItemWithItem = {
   menuId: string;

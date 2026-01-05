@@ -4,6 +4,8 @@ import {
   item,
   menu,
   menuItem,
+  order,
+  orderItem,
   restaurant,
   userProfile,
   type RestaurantType,
@@ -362,6 +364,29 @@ export const DeleteMenuItemByMenuId = async (
       .where(and(eq(menuItem.menuId, menuId), eq(menuItem.itemId, itemId)))
       .returning();
     return result;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const AddOrderItems = async (
+  items: (CreateItemType & { quantity: number })[],
+  customerName: string,
+) => {
+  try {
+    const [createOrder] = await db
+      .insert(order)
+      .values({ customerName })
+      .returning({ orderId: order.id });
+
+    const orderItemsData = items.map((item) => ({
+      orderId: createOrder?.orderId,
+      itemId: item.id as string,
+      quantity: item.quantity,
+    }));
+
+    await db.insert(orderItem).values(orderItemsData);
+    return createOrder;
   } catch (err: any) {
     throw err;
   }
