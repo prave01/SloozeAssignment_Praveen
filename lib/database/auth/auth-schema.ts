@@ -11,7 +11,7 @@ import { relations } from "drizzle-orm";
 import { restaurant, order } from "../restaurant/restaurant-schema";
 
 export const rolesEnum = pgEnum("role", ["admin", "manager", "member"]);
-export const locationEnum = pgEnum("location", ["america", "india"]);
+export const locationEnum = pgEnum("location", ["america", "india", "both"]);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),

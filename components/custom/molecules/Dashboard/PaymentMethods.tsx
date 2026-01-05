@@ -6,25 +6,40 @@ import { GetPaymentMethods, TogglePaymentMethod } from '@/server/serverFn'
 import { useEffect, useState } from 'react'
 import { CreatePaymentDialog } from './CreatePaymentMethod'
 import { toast } from 'sonner'
-import { CreditCard, CheckCircle2, XCircle } from 'lucide-react'
+import { CreditCard, CheckCircle2, XCircle, Loader2 } from 'lucide-react'
+import { useDashboardLocation } from '@/client/store/Dashboard/store'
+import { getUserProfile } from '@/server/serverFn'
+import { Spinner } from '@/components/ui/spinner'
 
 type PaymentMethod = {
   id: string
   name: string
   isEnabled: boolean
   image?: string | null
+  location: 'america' | 'india'
 }
 
 export function PaymentMethods() {
+  const location = useDashboardLocation((s) => s.location);
   const [methods, setMethods] = useState<PaymentMethod[]>([])
   const [loadingId, setLoadingId] = useState<string | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    ;(async () => {
-      const data = await GetPaymentMethods()
+    ; (async () => {
+      setLoading(true)
+      try {
+        const user = await getUserProfile()
+        setIsAdmin(user.role === 'admin')
+      } catch (e) {
+        console.error(e)
+      }
+      const data = await GetPaymentMethods(location)
       setMethods(data)
+      setLoading(false)
     })()
-  }, [])
+  }, [location])
 
   const handleToggle = async (id: string, next: boolean) => {
     // optimistic update
@@ -59,14 +74,21 @@ export function PaymentMethods() {
             border-myborder text-md"
         >
           Payment Methods
-          <CreatePaymentDialog />
+          {isAdmin && <CreatePaymentDialog />}
         </CardTitle>
 
         <CardContent
           className="flex flex-row flex-wrap gap-4 py-4 px-4 bg-accent/80
-            min-h-48"
+            min-h-48 items-center justify-center"
         >
-          {methods.length === 0 ? (
+          {loading ? (
+            <div className="flex flex-col items-center gap-2">
+              <Spinner className="size-8 text-primary" />
+              <p className="text-xs text-muted-foreground animate-pulse">
+                Loading payment methods...
+              </p>
+            </div>
+          ) : methods.length === 0 ? (
             <div
               className="flex w-full h-48 flex-col items-center justify-center
                 gap-2 text-center"
@@ -132,6 +154,9 @@ export function PaymentMethods() {
                       <h3 className="text-sm font-semibold truncate">
                         {item.name}
                       </h3>
+                      <p className="text-xs text-muted-foreground capitalize">
+                        {item.location}
+                      </p>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         {item.isEnabled ? (
                           <>
@@ -168,7 +193,7 @@ export function PaymentMethods() {
                     </span>
                     <Switch
                       checked={item.isEnabled}
-                      disabled={loadingId === item.id}
+                      disabled={loadingId === item.id || !isAdmin}
                       onCheckedChange={(val) => handleToggle(item.id, val)}
                     />
                   </div>

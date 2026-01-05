@@ -1,6 +1,17 @@
 import NavMenu from "@/components/custom/molecules/NavMenu";
+import { auth } from "@/lib/auth/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({ children }: { children: React.ReactNode }) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.session) {
+    redirect("/login");
+  }
+
   return (
     <div className="w-full min-h-screen dark:bg-black bg-zinc-200">
       <div className="flex w-full h-auto">
@@ -67,7 +78,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 WebkitMaskComposite: "source-in",
               }}
             />{" "}
-            {children}
+            <div className="relative z-10 h-full w-full overflow-auto">
+              {children}
+            </div>
           </div>
         </div>
       </div>

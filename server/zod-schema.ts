@@ -4,9 +4,9 @@ export const CreateUserSchema = z.object({
   name: z.string(),
   email: z.email(),
   password: z.string(),
-  location: z.enum(["india", "america"]),
+  location: z.enum(["india", "america", "both"]),
   image: z.string().optional(),
-  role: z.enum(["member", "manager"]),
+  role: z.enum(["member", "manager", "admin"]),
 });
 
 export type CreateUserServerType = z.infer<typeof CreateUserSchema>;
@@ -39,6 +39,7 @@ export const CreatePaymentMethodSchema = z.object({
   name: z.string(),
   isEnabled: z.boolean(),
   image: z.string().optional(),
+  location: z.enum(["america", "india"]),
 });
 
 export type CreatePaymentMethodType = z.infer<typeof CreatePaymentMethodSchema>;

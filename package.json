@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "prettier": "npx prettier .",
-    "db:generate": "npx dirzzle-kit generate",
+    "db:generate": "npx drizzle-kit generate",
     "db:migrate": "npx drizzle-kit migrate",
     "db:push": "npx drizzle-kit push"
   },

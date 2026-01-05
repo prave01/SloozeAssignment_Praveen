@@ -17,12 +17,20 @@ import { useSelectItemsCardOrder } from "@/client/store/Order/store";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { getUserProfile } from "@/server/serverFn";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type PaymentMethod = {
   id: string;
   name: string;
-  image?: string;
+  image?: string | null;
   isEnabled: boolean;
+  location: "america" | "india";
 };
 
 export function PaymentDrawer({
@@ -36,6 +44,8 @@ export function PaymentDrawer({
   const [selected, setSelected] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [canPlaceOrder, setCanPlaceOrder] = useState(false);
+  const [isCheckingRole, setIsCheckingRole] = useState(true);
 
   const selectedItems = useSelectItemsCardOrder((s) => s.selectedItems);
   const clearCart = useSelectItemsCardOrder((s) => s.clear);
@@ -44,10 +54,18 @@ export function PaymentDrawer({
 
   useEffect(() => {
     (async () => {
-      const data = await GetPaymentMethods();
+      try {
+        const user = await getUserProfile();
+        setCanPlaceOrder(user.role === "admin" || user.role === "manager");
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsCheckingRole(false);
+      }
+      const data = await GetPaymentMethods(location);
       setMethods(data);
     })();
-  }, []);
+  }, [location]);
 
   const handlePayment = async () => {
     if (!selected) {
@@ -89,15 +107,27 @@ export function PaymentDrawer({
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
-        <Button
-          disabled={total === 0}
-          variant="outline"
-          className="p-5 mt-auto"
-        >
-          Pay Now
-        </Button>
-      </DrawerTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="w-full">
+              <Button
+                disabled={total === 0 || !canPlaceOrder || isCheckingRole}
+                variant="outline"
+                className="p-5 mt-auto w-full"
+                onClick={() => setOpen(true)}
+              >
+                {isCheckingRole ? "Checking Permissions..." : "Pay Now"}
+              </Button>
+            </div>
+          </TooltipTrigger>
+          {!canPlaceOrder && !isCheckingRole && (
+            <TooltipContent>
+              <p>Only Admins and Managers can place orders.</p>
+            </TooltipContent>
+          )}
+        </Tooltip>
+      </TooltipProvider>
 
       <DrawerContent>
         <div className="mx-auto w-full max-w-md flex flex-col items-center">
@@ -128,7 +158,7 @@ export function PaymentDrawer({
               </p>
             )}
 
-            {methods.map((method) => {
+            {methods.map((method: PaymentMethod) => {
               const disabled = !method.isEnabled;
               const isSelected = selected === method.id;
 
@@ -190,7 +220,7 @@ export function PaymentDrawer({
               disabled={
                 loading ||
                 !selected ||
-                !methods.find((m) => m.id === selected)?.isEnabled
+                !methods.find((m: PaymentMethod) => m.id === selected)?.isEnabled
               }
               onClick={handlePayment}
             >

@@ -12,20 +12,34 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Spinner } from "@/components/ui/spinner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { CreatePaymentMethod, uploadImage } from "@/server/serverFn";
 import { Plus } from "lucide-react";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { useDashboardLocation } from "@/client/store/Dashboard/store";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 
 export function CreatePaymentDialog() {
+  const globalLocation = useDashboardLocation((s) => s.location);
   const [name, setName] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [isEnabled, setIsEnabled] = useState(false);
+  const [location, setLocation] = useState<"america" | "india">(globalLocation);
   const [loading, setLoading] = useState(false);
 
   const fileRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    setLocation(globalLocation);
+  }, [globalLocation]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -55,6 +69,7 @@ export function CreatePaymentDialog() {
         name,
         isEnabled,
         image: imageUrl,
+        location,
       });
 
       toast.success("Payment method created");
@@ -97,6 +112,23 @@ export function CreatePaymentDialog() {
                 placeholder="UPI / Cash / Card"
                 disabled={loading}
               />
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Location</Label>
+              <Select
+                value={location}
+                onValueChange={(val: "america" | "india") => setLocation(val)}
+                disabled={loading}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select location" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="america">America</SelectItem>
+                  <SelectItem value="india">India</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="grid gap-2">

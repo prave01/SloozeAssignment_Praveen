@@ -39,7 +39,7 @@ export function CustomSelectCard({
   removeItem: (buffer: { itemId: string }[]) => void;
   filterItem?: (buffer: { itemId: string }[]) => void;
 }) {
-  const isSelected = selectedItems.has(id as string);
+  const isSelected = id ? selectedItems.has(id) : false;
   const currencySymbol = location === "india" ? "₹" : "$";
   const formattedTime =
     Number(elapsedTime) >= 60
@@ -72,25 +72,31 @@ export function CustomSelectCard({
   };
 
   const handleSelect = () => {
-    if (type === "menu") {
-      if (!selectedItems.has(id as string) && setCardItem) {
-        setCardItem([{ itemId: id as string, menuId }]);
-        return;
-      }
-      removeItem([{ itemId: id as string }]);
+    // Validate that item has an ID before allowing selection
+    if (!id) {
+      toast.error("Cannot select item: ID is missing");
       return;
     }
-    if (!selectedItems.has(id as string) && setOrderItem && filterItem) {
+
+    if (type === "menu") {
+      if (!selectedItems.has(id) && setCardItem) {
+        setCardItem([{ itemId: id, menuId }]);
+        return;
+      }
+      removeItem([{ itemId: id }]);
+      return;
+    }
+    if (!selectedItems.has(id) && setOrderItem && filterItem) {
       setOrderItem([
         {
-          itemId: id as string,
+          itemId: id,
           item: { name, cost, id, elapsedTime, location, image, quantity: 0 },
         },
       ]);
-      filterItem([{ itemId: id as string }]);
+      filterItem([{ itemId: id }]);
       return;
     }
-    removeItem([{ itemId: id as string }]);
+    removeItem([{ itemId: id }]);
   };
 
   return (

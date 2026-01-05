@@ -78,15 +78,16 @@ export function CreateItemClient({
       ]);
 
       if (createdItem[0].id) {
-        // refreshing the available items
+        // refreshing the available items with the complete item including ID
         setItems([
           ...items,
           {
-            name: data.name,
-            elapsedTime: data.elapsedTime,
-            cost: data.cost,
-            location: data.location,
-            image: data.image,
+            id: createdItem[0].id,
+            name: createdItem[0].name,
+            elapsedTime: createdItem[0].elapsedTime,
+            cost: createdItem[0].cost,
+            location: createdItem[0].location,
+            image: createdItem[0].image,
           },
         ]);
       }

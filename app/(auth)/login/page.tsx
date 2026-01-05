@@ -1,9 +1,9 @@
-import LoginCard from "@/components/custom/molecules/LoginCard";
+import LoginCardClient from "@/components/custom/molecules/Auth/LoginCardClient";
 
 export default function Page() {
   return (
     <div className="">
-      <LoginCard />
+      <LoginCardClient />
     </div>
   );
 }

@@ -158,22 +158,28 @@ export function ShowAvailableItems({
 
         <div className="h-[520px]  no-scrollbar w-full overflow-y-scroll">
           <div className="grid grid-cols-2 gap-2 pb-2">
-            {items.map((item, index) => (
-              <CustomSelectCard
-                key={item.id ?? `${item.name}-${item.location}-${index}`}
-                name={item.name}
-                type="menu"
-                cost={item.cost}
-                menuId={menuId as string}
-                location={item.location}
-                id={item.id}
-                elapsedTime={item.elapsedTime}
-                image={item.image ?? undefined}
-                setCardItem={setItems}
-                selectedItems={selectedItems}
-                removeItem={removeItem}
-              />
-            ))}
+            {!menuId ? (
+              <div className="col-span-2 flex items-center justify-center h-full text-sm text-muted-foreground">
+                Please select a location to view items
+              </div>
+            ) : (
+              items.map((item, index) => (
+                <CustomSelectCard
+                  key={item.id ?? `${item.name}-${item.location}-${index}`}
+                  name={item.name}
+                  type="menu"
+                  cost={item.cost}
+                  menuId={menuId}
+                  location={item.location}
+                  id={item.id}
+                  elapsedTime={item.elapsedTime}
+                  image={item.image ?? undefined}
+                  setCardItem={setItems}
+                  selectedItems={selectedItems}
+                  removeItem={removeItem}
+                />
+              ))
+            )}
           </div>
         </div>
       </div>

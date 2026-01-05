@@ -65,6 +65,7 @@ export const paymentMethod = pgTable('payment_method', {
   name: text('name').notNull(),
   image: text('image'),
   isEnabled: boolean('is_enabled').notNull().default(true),
+  location: locationEnum().notNull().default('america'),
 })
 
 export const orderIdSequence = pgSequence('order_id_seq', {
