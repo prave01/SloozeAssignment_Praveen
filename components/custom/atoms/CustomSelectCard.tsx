@@ -1,7 +1,5 @@
 "use client";
 
-import { useAvailableItems } from "@/client/store/Menu/store";
-import { useSelectItemsCardOrder } from "@/client/store/Order/store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -27,9 +25,11 @@ export function CustomSelectCard({
   menuId: string;
   className?: ClassNameValue;
   type: "order" | "menu";
-  selectedItems: Map<string, string | CreateItemType>;
+  selectedItems: Map<string, string | (CreateItemType & { quantity: number })>;
   setCardItem?: (buffer: { itemId: string; menuId: string }[]) => void;
-  setOrderItem?: (buffer: { itemId: string; item: CreateItemType }[]) => void;
+  setOrderItem?: (
+    buffer: { itemId: string; item: CreateItemType & { quantity: number } }[],
+  ) => void;
   removeItem: (buffer: { itemId: string }[]) => void;
   filterItem?: (buffer: { itemId: string }[]) => void;
 }) {
@@ -45,7 +45,7 @@ export function CustomSelectCard({
       setOrderItem([
         {
           itemId: id as string,
-          item: { name, cost, id, elapsedTime, location, image },
+          item: { name, cost, id, elapsedTime, location, image, quantity: 0 },
         },
       ]);
       filterItem([{ itemId: id as string }]);

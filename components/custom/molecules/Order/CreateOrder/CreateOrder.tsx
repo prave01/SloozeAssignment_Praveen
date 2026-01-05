@@ -91,7 +91,7 @@ export function CreateOrder({
     >
       <CardTitle className="font-medium text-lg">Available Items</CardTitle>
       <CardContent className="p-0 flex flex-col gap-2">
-        <div className="w-full flex justify-between pr-2 items-center">
+        <div className="w-full">
           <input
             value={searchInput}
             placeholder="Find Items by Name"
@@ -99,14 +99,10 @@ export function CreateOrder({
               e.preventDefault();
               setSearchInput(e.target.value);
             }}
-            className={`rounded-none w-[60%] placeholder:text-xs text-sm
+            className={`rounded-none mr-auto w-[60%] placeholder:text-xs text-sm
               placeholder:pl-1 placeholder:italic focus:outline-none
               focus:bg-zinc-500/20 border border-myborder px-2 py-2`}
           />
-
-          <Button onClick={handleAddItems} className="">
-            Add
-          </Button>
         </div>
         <ScrollArea className="h-108 w-fit">
           <div className="pr-3 mr-0 m-0">
