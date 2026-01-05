@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Slooze Assignment - Restaurant Management System
 
-## Getting Started
+This is a restaurant management dashboard built with Next.js, Drizzle ORM, and Better-Auth.
 
-First, run the development server:
+## Setup & Delivery Instructions
+
+Follow these steps to set up the project locally and verify the functionality.
+
+### 1. Environment Configuration
+
+Copy the example environment file to `.env` and fill in your secrets:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and add your configuration:
+
+```env
+DATABASE_URL=your_postgresql_connection_string
+BETTER_AUTH_SECRET=your_auth_secret
+BETTER_AUTH_URL=http://localhost:3000
+CLOUDINARY_CLOUD_NAME=your_cloudinary_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+### 2. Database Setup
+
+Ensure your PostgreSQL database is running. You can use the provided Docker Compose file to start a local instance:
+
+```bash
+# Start the PostgreSQL server
+docker compose up -d
+```
+
+Once the database is running, push the schema and seed the initial data:
+
+```bash
+# Push the schema to the database
+npm run db:push
+
+# Seed the database with default users and restaurants
+npm run db:seed
+```
+
+### 3. Database Viewer (Drizzle Studio)
+
+You can explore the database locally using Drizzle Studio:
+
+1. Run the studio command:
+   ```bash
+   npx drizzle-kit studio
+   ```
+2. Open [https://local.drizzle.studio](https://local.drizzle.studio) in your browser to view and manage your data.
+
+### 4. Run the Application
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Login Credentials for Reviewers
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Use the following credentials to test different role-based permissions:
 
-## Learn More
+| Role | Email | Password | Access Level |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `nick@example.com` | `password123` | Full access, User Management, Payment Methods |
+| **Manager** | `manager@example.com` | `password123` | Order Management (Cancel/Complete), Checkout |
+| **Member** | `member@example.com` | `password123` | View Menu, Add to Cart (No Checkout) |
 
-To learn more about Next.js, take a look at the following resources:
+## Key Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Role-Based Access Control (RBAC)**: Different UI and permissions for Admin, Manager, and Member.
+- **Global Location Selector**: Switch between India and America branches (Admin only).
+- **User Management**: Admin can create, edit, and delete users.
+- **Order Tracking**: Real-time status updates and filtering.
+- **Optimized UI**: Skeleton loaders and component-level spinners to prevent flickering.
