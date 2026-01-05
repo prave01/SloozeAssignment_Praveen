@@ -9,7 +9,13 @@ import { CustomSelectCard } from "@/components/custom/atoms/CustomSelectCard";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Spinner } from "@/components/ui/spinner";
-import { GetItemsByQuery, GetMenuItems } from "@/server/serverFn";
+import {
+  GetItemsByQuery,
+  getMenuId,
+  GetMenuItems,
+  GetMenuItemsByMenuId,
+  GetMenuItemsByQuery,
+} from "@/server/serverFn";
 import { Scrollbar } from "@radix-ui/react-scroll-area";
 import { useEffect, useState } from "react";
 
@@ -20,8 +26,7 @@ export function CreateOrder({
   restaurant: "america" | "india";
   menuId?: string;
 }) {
-  const [loading, setLoading] = useState(true);
-  const [addLoading, setAddLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // this is for storing the available items from db
   const items = useAvailableItemsOrder((s) => s.availableItems);
@@ -35,7 +40,7 @@ export function CreateOrder({
   const removeItem = useSelectItemsCardOrder((s) => s.removeItem);
 
   const [searchInput, setSearchInput] = useState("");
-  const debouncedSearch = useDebounce(searchInput, 400);
+  const debouncedSearch = useDebounce(searchInput);
 
   useEffect(() => {
     if (!menuId) return;
@@ -44,18 +49,13 @@ export function CreateOrder({
       try {
         clear();
 
-        const [allItems, menuItems] = await Promise.all([
-          GetItemsByQuery(restaurant, debouncedSearch),
-          GetMenuItems(menuId),
-        ]);
-
-        const menuItemIds = new Set(menuItems.map((item) => item.itemId));
-
-        const availableItems = allItems.filter(
-          (item) => !menuItemIds.has(item.id),
+        const menuItems = await GetMenuItemsByQuery(
+          restaurant,
+          menuId,
+          debouncedSearch,
         );
 
-        addItems(availableItems);
+        addItems(menuItems);
       } finally {
         setLoading(false);
       }
@@ -86,7 +86,7 @@ export function CreateOrder({
           {loading && (
             <div
               className="absolute z-30 flex backdrop-blur-md w-full h-full
-                items-center justify-center"
+                items-center justify-center flex-col gap-2"
             >
               <Spinner className="size-5" />
               <span className="text-muted-foreground">Fetching Items</span>

@@ -6,6 +6,7 @@ import {
   menuItem,
   order,
   orderItem,
+  paymentMethod,
   restaurant,
   userProfile,
   type RestaurantType,
@@ -22,6 +23,8 @@ import {
   type CreateItemType,
   ItemBaseSchema,
   CreateUserSchema,
+  CreatePaymentMethodType,
+  CreatePaymentMethodSchema,
 } from "./zod-schema";
 import { auth } from "@/lib/auth/auth";
 import cloudinary from "@/lib/cloudinary";
@@ -340,6 +343,40 @@ export const GetItemsByQuery = async (
   }
 };
 
+export const GetMenuItemsByQuery = async (
+  location: "america" | "india",
+  menuId: string,
+  query: string,
+) => {
+  try {
+    const conditions = [
+      eq(menuItem.menuId, menuId),
+      eq(item.location, location),
+    ];
+
+    if (query.trim()) {
+      conditions.push(ilike(item.name, `%${query}%`));
+    }
+
+    const rows = await db
+      .select({
+        id: item.id,
+        name: item.name,
+        cost: item.cost,
+        image: item.image,
+        location: item.location,
+        elapsedTime: item.elapsedTime,
+      })
+      .from(menuItem)
+      .innerJoin(item, eq(menuItem.itemId, item.id))
+      .where(and(...conditions));
+
+    return rows;
+  } catch (err) {
+    throw err;
+  }
+};
+
 export const GetMenuItemsByMenuId = async (menuId: string) => {
   try {
     const res = await db.query.menuItem.findMany({
@@ -387,6 +424,40 @@ export const AddOrderItems = async (
 
     await db.insert(orderItem).values(orderItemsData);
     return createOrder;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const CreatePaymentMethod = async (data: CreatePaymentMethodType) => {
+  try {
+    const parsed = CreatePaymentMethodSchema.safeParse(data);
+    if (!parsed.success) {
+      throw new Error(`Invalid input:\n ${parsed.error.message}`);
+    }
+
+    const { image, name, isEnabled } = parsed.data;
+
+    const imageUrl =
+      typeof image === "string" && image.trim().length > 0 ? image : undefined;
+
+    const [id] = await db
+      .insert(paymentMethod)
+      .values({ image: imageUrl, isEnabled, name })
+      .returning({
+        paymentId: paymentMethod.id,
+      });
+
+    return id;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
+export const GetPaymentMethods = async () => {
+  try {
+    const methods = db.query.paymentMethod.findMany();
+    return methods;
   } catch (err: any) {
     throw err;
   }

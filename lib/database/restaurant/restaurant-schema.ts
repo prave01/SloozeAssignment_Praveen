@@ -5,6 +5,7 @@ import {
   pgEnum,
   uuid,
   pgSequence,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 import { userProfile } from "../auth/auth-schema";
@@ -82,6 +83,13 @@ export const orderItem = pgTable(
     pk: primaryKey({ columns: [t.orderId, t.itemId] }),
   }),
 );
+
+export const paymentMethod = pgTable("payment_method", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  image: text("image"),
+  isEnabled: boolean("is_enabled").default(true),
+});
 
 export const restaurantRelations = relations(restaurant, ({ one, many }) => ({
   menu: one(menu),

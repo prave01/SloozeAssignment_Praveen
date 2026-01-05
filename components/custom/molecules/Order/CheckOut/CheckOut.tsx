@@ -1,7 +1,7 @@
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useSelectItemsCardOrder } from "@/client/store/Order/store";
 import { Separator } from "@/components/ui/separator";
+import { PaymentDrawer } from "../Payment/PaymentDrawer";
 
 export function CheckOut({ location }: { location: "america" | "india" }) {
   const selectedItems = useSelectItemsCardOrder((s) => s.selectedItems);
@@ -85,10 +85,7 @@ export function CheckOut({ location }: { location: "america" | "india" }) {
             </span>
           </div>
         </div>
-
-        <Button className="mt-auto w-full" disabled={items.length === 0}>
-          Pay
-        </Button>
+        <PaymentDrawer total={total} />
       </CardContent>
     </Card>
   );

@@ -34,3 +34,11 @@ export const ItemBaseSchema = z.object({
 });
 
 export type CreateItemType = z.infer<typeof ItemBaseSchema>;
+
+export const CreatePaymentMethodSchema = z.object({
+  name: z.string(),
+  isEnabled: z.boolean(),
+  image: z.string().optional(),
+});
+
+export type CreatePaymentMethodType = z.infer<typeof CreatePaymentMethodSchema>;
