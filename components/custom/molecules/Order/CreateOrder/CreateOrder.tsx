@@ -6,18 +6,12 @@ import {
   useSelectItemsCardOrder,
 } from "@/client/store/Order/store";
 import { CustomSelectCard } from "@/components/custom/atoms/CustomSelectCard";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  AddItemsByMenu,
-  AddOrderItems,
-  GetItemsByQuery,
-  GetMenuItems,
-} from "@/server/serverFn";
+import { Spinner } from "@/components/ui/spinner";
+import { GetItemsByQuery, GetMenuItems } from "@/server/serverFn";
 import { Scrollbar } from "@radix-ui/react-scroll-area";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 export function CreateOrder({
   restaurant,
@@ -26,7 +20,7 @@ export function CreateOrder({
   restaurant: "america" | "india";
   menuId?: string;
 }) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [addLoading, setAddLoading] = useState(false);
 
   // this is for storing the available items from db
@@ -42,22 +36,6 @@ export function CreateOrder({
 
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDebounce(searchInput, 400);
-
-  const handleAddItems = async () => {
-    try {
-      if (selectedItems.size < 1) {
-        toast.error("Please selelct atleast one to proceed");
-        return;
-      }
-      setAddLoading(true);
-
-      toast.success("Items inserted successfully");
-    } catch (err: any) {
-      toast.error("Somthing went wrong", { description: `${err}` });
-    } finally {
-      setAddLoading(false);
-    }
-  };
 
   useEffect(() => {
     if (!menuId) return;
@@ -104,15 +82,24 @@ export function CreateOrder({
               focus:bg-zinc-500/20 border border-myborder px-2 py-2`}
           />
         </div>
-        <ScrollArea className="h-108 w-fit">
-          <div className="pr-3 mr-0 m-0">
+        <ScrollArea className="h-108 relative w-full">
+          {loading && (
+            <div
+              className="absolute z-30 flex backdrop-blur-md w-full h-full
+                items-center justify-center"
+            >
+              <Spinner className="size-5" />
+              <span className="text-muted-foreground">Fetching Items</span>
+            </div>
+          )}
+          <div className="pr-3 mr-0 m-0 h-full w-full">
             <div className="grid grid-cols-2 gap-x-3 gap-y-2">
               {items.map((item, index) => (
                 <CustomSelectCard
                   key={item.id ?? `${item.name}-${item.location}-${index}`}
                   className="rounded-none"
                   name={item.name}
-                  cost={0}
+                  cost={item.cost}
                   id={item.id}
                   elapsedTime={item.elapsedTime}
                   location={item.location}

@@ -12,6 +12,7 @@ import { getMenuId } from "@/server/serverFn";
 import { useEffect, useState } from "react";
 import { CreateOrder } from "../../molecules/Order/CreateOrder/CreateOrder";
 import { OrderSummary } from "../../molecules/Order/OrderSummary/OrderSummary";
+import { CheckOut } from "../../molecules/Order/CheckOut/CheckOut";
 
 export function OrderPage() {
   const [location, setLocation] = useState<"america" | "india">("america");
@@ -64,9 +65,10 @@ export function OrderPage() {
               </Select>
             </div>
           </CardTitle>
-          <CardContent className="p-2 flex flex-row gap-2">
+          <CardContent className="p-2 flex flex-row h-full gap-2">
             <CreateOrder menuId={menuId} restaurant={location} />
-            <OrderSummary />
+            <OrderSummary location={location} />
+            <CheckOut location={location} />
           </CardContent>
         </div>
       </div>

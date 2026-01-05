@@ -75,7 +75,7 @@ export function CustomSelectCard({
           >
             Cost -{" "}
             <span className="text-primary font-medium">
-              {location === "india" && cost ? `${cost} ₹` : `${cost} $`}
+              {location === "india" && cost ? `${cost}₹` : `${cost}$`}
             </span>
           </p>
           <p

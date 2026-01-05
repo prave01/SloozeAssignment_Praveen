@@ -42,7 +42,6 @@ type SelectItemCard = {
 // store for selecting cards
 export const useSelectItemsCardOrder = create<SelectItemCard>((set) => ({
   selectedItems: new Map(),
-
   addSelectedItem: (buffer) =>
     set((state) => {
       const next = new Map(state.selectedItems);
@@ -74,5 +73,5 @@ export const useSelectItemsCardOrder = create<SelectItemCard>((set) => ({
       }
       return { selectedItems: next };
     }),
-  clear: () => ({ selectedItems: new Map() }),
+  clear: () => set({ selectedItems: new Map() }),
 }));

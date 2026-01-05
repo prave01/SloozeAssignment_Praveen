@@ -1,22 +1,27 @@
 import { useSelectItemsCardOrder } from "@/client/store/Order/store";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 
 export function CustomOrderCard({
   id,
   name,
+  cost,
   location,
 }: {
   id: string;
   name: string;
+  cost: number;
   location: "america" | "india";
 }) {
   const [qty, setQty] = useState(1);
   const updateQuantity = useSelectItemsCardOrder((s) => s.updateQuantity);
+  const selectedItems = useSelectItemsCardOrder((s) => s.selectedItems);
 
   useEffect(() => {
-    updateQuantity(id, qty);
+    if (selectedItems.size > 0) {
+      updateQuantity(id, qty);
+    }
   }, [id, qty, updateQuantity]);
 
   return (
@@ -30,7 +35,8 @@ export function CustomOrderCard({
         <div className="flex justify-between text-muted-foreground">
           <span>Cost</span>
           <span className="text-primary">
-            $100 x {qty} = ${100 * qty}
+            {cost} x {qty} = {location === "america" ? "$" : "₹"}
+            {cost * qty}
           </span>
         </div>
 

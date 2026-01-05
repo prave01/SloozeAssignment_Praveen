@@ -68,7 +68,6 @@ export function ShowAvailableItems({
 
   useEffect(() => {
     if (!menuId) return;
-
     (async () => {
       setLoading(true);
       try {
@@ -153,8 +152,7 @@ export function ShowAvailableItems({
           />
         </div>
 
-        <div className="grid grid-cols-2 flex-wrap gap-2 h-50 pb-2">
-          {" "}
+        <div className="grid relative grid-cols-2 flex-wrap gap-2 h-50 pb-2">
           {items.map((item, index) => (
             <CustomSelectCard
               key={item.id ?? `${item.name}-${item.location}-${index}`}
