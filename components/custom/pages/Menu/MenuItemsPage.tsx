@@ -33,7 +33,7 @@ export function MenuItemsPage() {
     <div className="w-full h-full p-20">
       <Card
         className="p-0 max-h-full h-full rounded-none w-full shadow-none flex
-          flex-col bg-transparent border-none backdrop-blur-sm gap-2"
+          flex-col bg-transparent border-none backdrop-blur-md gap-2"
       >
         <CardTitle
           className="border-myborder flex items-center justify-between border
@@ -59,7 +59,7 @@ export function MenuItemsPage() {
         </CardTitle>
         <CardContent
           className="border-myborder flex gap-4 p-4 h-full w-full
-          border"
+          border backdrop-blur-md"
         >
           <CreateItemClient restaurant={location} />
           <ShowAvailableItems menuId={menuId} restaurant={location} />

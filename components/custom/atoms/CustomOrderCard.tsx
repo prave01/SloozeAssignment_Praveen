@@ -1,6 +1,9 @@
-import { useSelectItemsCardOrder } from "@/client/store/Order/store";
+import {
+  useAvailableItemsOrder,
+  useSelectItemsCardOrder,
+} from "@/client/store/Order/store";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, X } from "lucide-react";
 import { use, useEffect, useState } from "react";
 
 export function CustomOrderCard({
@@ -17,6 +20,8 @@ export function CustomOrderCard({
   const [qty, setQty] = useState(1);
   const updateQuantity = useSelectItemsCardOrder((s) => s.updateQuantity);
   const selectedItems = useSelectItemsCardOrder((s) => s.selectedItems);
+  const removeItem = useSelectItemsCardOrder((s) => s.removeItem);
+  const appendItem = useAvailableItemsOrder((s) => s.appendItem);
 
   useEffect(() => {
     if (selectedItems.size > 0) {
@@ -24,13 +29,31 @@ export function CustomOrderCard({
     }
   }, [id, qty, updateQuantity]);
 
+  const handleRemove = () => {
+    const item = selectedItems.get(id);
+    if (item) {
+      removeItem([{ itemId: id }]);
+      appendItem([item]);
+    }
+  };
+
   return (
     <div
       className="rounded-md border border-myborder px-3 py-2 transition-colors
         hover:border-primary/40"
     >
       <div className="flex flex-col gap-1 text-sm">
-        <p className="font-medium text-foreground capitalize">{name}</p>
+        <div className="flex items-center justify-between">
+          <p className="font-medium text-foreground capitalize">{name}</p>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-5 w-5 text-muted-foreground hover:text-destructive"
+            onClick={handleRemove}
+          >
+            <X className="h-3.5 w-3.5" />
+          </Button>
+        </div>
 
         <div className="flex justify-between text-muted-foreground">
           <span>Cost</span>

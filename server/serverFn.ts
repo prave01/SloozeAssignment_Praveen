@@ -406,14 +406,37 @@ export const DeleteMenuItemByMenuId = async (
   }
 };
 
+export const DeleteAvailableItem = async (itemId: string) => {
+  try {
+    const result = await db.delete(item).where(eq(item.id, itemId)).returning();
+    return result;
+  } catch (err: any) {
+    throw err;
+  }
+};
+
 export const AddOrderItems = async (
   items: (CreateItemType & { quantity: number })[],
   customerName: string,
+  location: "america" | "india",
+  total: number,
+  paymentMethodId?: string,
+  userId?: string,
 ) => {
   try {
+    if (items.length === 0) {
+      throw new Error("No items to add to order");
+    }
+
     const [createOrder] = await db
       .insert(order)
-      .values({ customerName })
+      .values({
+        customerName,
+        location,
+        total,
+        paymentMethodId: paymentMethodId || null,
+        userId: userId || null,
+      })
       .returning({ orderId: order.id });
 
     const orderItemsData = items.map((item) => ({
@@ -473,5 +496,50 @@ export const TogglePaymentMethod = async (id: string, isEnabled: boolean) => {
     return true;
   } catch (err) {
     throw new Error("Failed to update payment method");
+  }
+};
+
+export const GetOrders = async () => {
+  try {
+    const orders = await db.query.order.findMany({
+      with: {
+        orderItems: {
+          with: {
+            item: true,
+          },
+        },
+        paymentMethod: true,
+        user: {
+          columns: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+      orderBy: (order, { desc: descFn }) => [descFn(order.createdAt)],
+    });
+
+    return orders;
+  } catch (err: any) {
+    throw new Error("Failed to fetch orders");
+  }
+};
+
+export const CancelOrder = async (orderId: number) => {
+  try {
+    const [updatedOrder] = await db
+      .update(order)
+      .set({ status: "cancelled" })
+      .where(eq(order.id, orderId))
+      .returning();
+
+    if (!updatedOrder) {
+      throw new Error("Order not found");
+    }
+
+    return updatedOrder;
+  } catch (err: any) {
+    throw new Error(err?.message || "Failed to cancel order");
   }
 };

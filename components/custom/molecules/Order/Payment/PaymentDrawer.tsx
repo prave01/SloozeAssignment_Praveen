@@ -12,9 +12,11 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { GetPaymentMethods } from "@/server/serverFn";
+import { AddOrderItems, GetPaymentMethods } from "@/server/serverFn";
+import { useSelectItemsCardOrder } from "@/client/store/Order/store";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 type PaymentMethod = {
   id: string;
@@ -32,6 +34,11 @@ export function PaymentDrawer({
 }) {
   const [methods, setMethods] = useState<PaymentMethod[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const selectedItems = useSelectItemsCardOrder((s) => s.selectedItems);
+  const clearCart = useSelectItemsCardOrder((s) => s.clear);
 
   const currencySymbol = location === "america" ? "$" : "₹";
 
@@ -42,8 +49,46 @@ export function PaymentDrawer({
     })();
   }, []);
 
+  const handlePayment = async () => {
+    if (!selected) {
+      toast.error("Please select a payment method");
+      return;
+    }
+
+    const items = Array.from(selectedItems.values());
+    if (items.length === 0) {
+      toast.error("No items in cart");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // For now, using a default customer name. You can get it from auth later
+      const customerName = "Guest Customer";
+
+      const result = await AddOrderItems(
+        items,
+        customerName,
+        location,
+        total,
+        selected,
+      );
+
+      if (result?.orderId) {
+        toast.success(`Order #${result.orderId} created successfully!`);
+        clearCart();
+        setOpen(false);
+      }
+    } catch (error: any) {
+      console.error("Error creating order:", error);
+      toast.error(error?.message || "Failed to create order");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <Drawer>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Button
           disabled={total === 0}
@@ -143,11 +188,13 @@ export function PaymentDrawer({
             <Button
               className="w-[70%]"
               disabled={
-                !selected || !methods.find((m) => m.id === selected)?.isEnabled
+                loading ||
+                !selected ||
+                !methods.find((m) => m.id === selected)?.isEnabled
               }
+              onClick={handlePayment}
             >
-              Pay {currencySymbol}
-              {total}
+              {loading ? "Processing..." : `Pay ${currencySymbol}${total}`}
             </Button>
 
             <DrawerClose asChild>

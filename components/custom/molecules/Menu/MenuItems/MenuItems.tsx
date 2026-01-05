@@ -97,7 +97,7 @@ export function MenuItems({ menuId }: { menuId: string }) {
           </div>
         )}
 
-        <div className="flex flex-col gap-2 w-full">
+        <div className="flex flex-col gap-2 w-full h-55">
           {menuItems.map(({ item }) => (
             <div
               key={item.id}

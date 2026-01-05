@@ -5,6 +5,7 @@ import { create } from "zustand";
 type AvailableItemsOrder = {
   availableItems: Array<CreateItemType>;
   addItems: (buffer: Array<CreateItemType>) => void;
+  appendItem: (buffer: Array<CreateItemType>) => void;
   filterItems: (buffer: { itemId: string }[]) => void;
   clear: () => void;
 };
@@ -12,6 +13,8 @@ type AvailableItemsOrder = {
 export const useAvailableItemsOrder = create<AvailableItemsOrder>((set) => ({
   availableItems: [],
   addItems: (buffer) => set({ availableItems: buffer }),
+  appendItem: (buffer) =>
+    set((state) => ({ availableItems: [...state.availableItems, ...buffer] })),
   filterItems: (buffer) =>
     set((state) => {
       const removeIds = new Set(buffer.map((b) => b.itemId));

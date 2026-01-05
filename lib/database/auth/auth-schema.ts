@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { relations } from "drizzle-orm";
-import { restaurant } from "../restaurant/restaurant-schema";
+import { restaurant, order } from "../restaurant/restaurant-schema";
 
 export const rolesEnum = pgEnum("role", ["admin", "manager", "member"]);
 export const locationEnum = pgEnum("location", ["america", "india"]);
@@ -101,6 +101,7 @@ export const userRelations = relations(user, ({ one, many }) => ({
   }),
   sessions: many(session),
   accounts: many(account),
+  orders: many(order),
 }));
 
 export const userProfileRelations = relations(userProfile, ({ one }) => ({

@@ -85,7 +85,7 @@ export function CheckOut({ location }: { location: "america" | "india" }) {
             </span>
           </div>
         </div>
-        <PaymentDrawer total={total} />
+        <PaymentDrawer total={total} location={location} />
       </CardContent>
     </Card>
   );
