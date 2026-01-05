@@ -88,7 +88,7 @@ export const paymentMethod = pgTable("payment_method", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
   image: text("image"),
-  isEnabled: boolean("is_enabled").default(true),
+  isEnabled: boolean("is_enabled").notNull().default(true),
 });
 
 export const restaurantRelations = relations(restaurant, ({ one, many }) => ({

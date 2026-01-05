@@ -462,3 +462,16 @@ export const GetPaymentMethods = async () => {
     throw err;
   }
 };
+
+export const TogglePaymentMethod = async (id: string, isEnabled: boolean) => {
+  try {
+    await db
+      .update(paymentMethod)
+      .set({ isEnabled })
+      .where(eq(paymentMethod.id, id));
+
+    return true;
+  } catch (err) {
+    throw new Error("Failed to update payment method");
+  }
+};
