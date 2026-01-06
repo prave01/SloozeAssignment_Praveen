@@ -2,6 +2,9 @@
 
 This is a restaurant management dashboard built with Next.js, Drizzle ORM, and Better-Auth.
 
+<img width="1272" height="798" alt="image" src="https://github.com/user-attachments/assets/6db92fca-f9b3-4a89-8426-55f9b4c3e969" />
+
+
 ## Setup & Delivery Instructions
 
 Follow these steps to set up the project locally and verify the functionality.
