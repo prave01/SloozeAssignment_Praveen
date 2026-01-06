@@ -1,1 +1,0 @@
-ALTER TABLE "payment_method" ADD COLUMN "location" "location" DEFAULT 'america' NOT NULL;
