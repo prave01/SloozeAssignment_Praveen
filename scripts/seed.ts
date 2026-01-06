@@ -94,7 +94,7 @@ async function seed() {
           .insert(userProfile)
           .values({
             userId: res.user.id,
-            role: u.roleed
+            role: u.role,
             location: u.location,
             restaurantID,
           })
