@@ -69,7 +69,7 @@ export default function LoginCardClient() {
         }}
       ></div>
       <CardTitle
-        className="lg:text-lg border-b border-myborder relative w-100 text-md
+        className="lg:text-lg border-b border-myborder relative w-full text-md
           p-2"
       >
         Login with credentials
