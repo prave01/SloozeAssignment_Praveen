@@ -57,14 +57,14 @@ async function seed() {
         location: "both" as const,
       },
       {
-        name: "John Manager",
+        name: "Captain Marvel",
         email: "manager@example.com",
         password: "password123",
         role: "manager" as const,
         location: "india" as const,
       },
       {
-        name: "Jane Member",
+        name: "Travis",
         email: "member@example.com",
         password: "password123",
         role: "member" as const,

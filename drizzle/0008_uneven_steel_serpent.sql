@@ -1,0 +1,1 @@
+ALTER TYPE "public"."location" ADD VALUE 'both';

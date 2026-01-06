@@ -57,6 +57,13 @@
       "when": 1767676692236,
       "tag": "0007_wild_alex_power",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1767679331732,
+      "tag": "0008_uneven_steel_serpent",
+      "breakpoints": true
     }
   ]
 }
