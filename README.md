@@ -41,7 +41,8 @@ Once the database is running, push the schema and seed the initial data:
 
 ```bash
 # Push the schema to the database
-npm run db:push
+npm run db:generate 
+npm run db:migrate
 
 # Seed the database with default users and restaurants
 npm run db:seed
